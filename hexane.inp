@@ -6,5 +6,5 @@ output solvent.xyz
 
 structure hexane.xyz
   number 500
-  inside box 0. 0. 0. 50. 50. 50.
+  inside box 0. 0. 0. 80. 20. 80.
 end structure

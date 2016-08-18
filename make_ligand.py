@@ -7,18 +7,19 @@ parser.add_argument("-fmt", type=str, choices=["xyz", "lmp"], help="output forma
 args = parser.parse_args()
 
 data = np.genfromtxt('/home/pratima/Biased-SingleLigand/coords.txt', delimiter=' ')
+hex_data = np.genfromtxt('/home/pratima/Biased-SingleLigand/solvent.txt', delimiter=' ')
 x0 = data[0,1]
 y0 = data[0,2]
 z0 = data[0,3]
 nx = 20
 nz = 12
 n_surf = nx * nz * 16		# number of Cd, S atoms in 4 layers of 12x20 surface grids
-xlo = -200.0
-xhi =  200.0
-ylo = -200.0
-yhi =  200.0
-zlo = -200.0
-zhi =  200.0
+xlo = -100.0
+xhi =  100.0
+ylo = -100.0
+yhi =  100.0
+zlo = -100.0
+zhi =  100.0
 
 # centre the octadecyl chain
 centred_data = np.zeros( (len(data), 3) )
@@ -32,10 +33,18 @@ rotate = np.array([ [np.cos(0.5 * np.pi), -np.sin(0.5 * np.pi), 0], [np.sin(0.5 
 for i in range(n_chain):
     centred_data[i,:] = rotate.dot(centred_data[i,:])
 
+# shift hexane molecules up by 25 A in y-direction
+centred_hex = np.zeros( (len(hex_data), 3) )
+for i in range(len(hex_data)):
+    centred_hex[i,0] = hex_data[i,1]
+    centred_hex[i,1] = hex_data[i,2] + 25.0
+    centred_hex[i,2] = hex_data[i,3]
+n_hex = len(centred_hex) / 6
+
 # now specify chain coordinates
 # VMD input file generation
 if args.fmt == "xyz":
-    print "{}".format(n_chain + n_surf)
+    print "{}".format(n_chain + n_surf + n_hex * 6)
     print "Comment Line"
     coords = np.copy(centred_data)
     coords[:,0] = coords[:,0] + 4.12 * 6
@@ -70,15 +79,21 @@ if args.fmt == "xyz":
             print "3    {:4.5f} {:4.5f} {:4.5f}".format( coords[0], coords[1] - 7.13848 - 3.5693 - 1.18977, coords[2] + 3.375 )
             print "4    {:4.5f} {:4.5f} {:4.5f}".format( coords[0], coords[1] - 7.13848 - 3.5693 - 1.18977, coords[2] - 3.375 + 2.5299 )
 
+    for i in range(n_hex * 6):
+        if (i%6 == 0 or (i+1)%6 == 0):
+            print "5	{:4.5f}	{:4.5f}	{:4.5f}".format( centred_hex[i, 0], centred_hex[i,1], centred_hex[i,2] )
+        else:
+            print "6	{:4.5f}	{:4.5f}	{:4.5f}".format( centred_hex[i, 0], centred_hex[i,1], centred_hex[i,2] )
+
 # LAMMPS input file generation
 if args.fmt == "lmp":
     print "LAMMPS coordinates for single octadecyl chain on a CdS slab"
-    print "{}	atoms".format( n_chain + n_surf )
-    print "{}	bonds".format( n_chain )
-    print "{}	angles".format( n_chain - 2 )
-    print "{}	dihedrals\n".format( n_chain - 3 )
+    print "{}	atoms".format( n_chain + n_surf + n_hex * 6 )
+    print "{}	bonds".format( n_chain + n_hex * 5 )
+    print "{}	angles".format( n_chain - 2 + n_hex * 4 )
+    print "{}	dihedrals\n".format( n_chain - 3 + n_hex * 3 )
 
-    print "4	atom types"
+    print "6	atom types"
     print "1	bond types"
     print "1	angle types"
     print "1	dihedral types\n"
@@ -91,7 +106,9 @@ if args.fmt == "lmp":
     print "1 15.034"
     print "2 14.027"
     print "3 112.411"
-    print "4 32.065\n"
+    print "4 32.065"
+    print "5 15.034"
+    print "6 14.027\n"
 
     # start printing atomic coordinates
     print "Atoms\n"
@@ -129,6 +146,16 @@ if args.fmt == "lmp":
             print "{}   2      4       {:4.5f} {:4.5f} {:4.5f}".format( natom + 15, coords[0], coords[1] - 7.13848 - 3.5693 - 1.18977, coords[2] - 3.375 + 2.5299 )
             natom = natom + 16
 
+    nmol = 3
+    for i in range(n_hex * 6):
+        if (i%6 == 0 or (i+1)%6 == 0):
+            print "{}	{}	5	{:4.5f}	{:4.5f}	{:4.5f}".format( natom, nmol, centred_hex[i, 0], centred_hex[i, 1], centred_hex[i, 2] )
+        else:
+            print "{}	{}	6	{:4.5f}	{:4.5f}	{:4.5f}".format( natom, nmol, centred_hex[i, 0], centred_hex[i, 1], centred_hex[i, 2] )
+        natom = natom + 1
+        if ((i+1)%6 == 0):
+            nmol = nmol + 1
+
     # define atomic bonds for octadecyl and between ligand and corresponding Cd atom
     print "\nBonds\n"
     nbond = 1
@@ -136,6 +163,11 @@ if args.fmt == "lmp":
         print "{}	1	{}	{}".format( nbond, i + 1, i + 2 )
         nbond = nbond + 1
     print "{}	1	{}	{}".format( nbond, 1, 1235 )
+    nbond = nbond + 1
+    for i in range(n_hex):
+        for j in range(5):
+            print "{}	1	{}	{}".format( nbond, 3859 + i * 6 + j, 3859 + i * 6 + j + 1 )
+            nbond = nbond + 1
 
     # define octadecyl angles
     print "\nAngles\n"
@@ -143,6 +175,10 @@ if args.fmt == "lmp":
     for i in range(n_chain-2):
         print "{}	1	{}	{}	{}".format( nangle, i + 1, i + 2, i + 3 )
         nangle = nangle + 1
+    for i in range(n_hex):
+        for j in range(4):
+            print "{}	1	{}	{}	{}".format( nangle, 3859 + i * 6 + j, 3859 + i * 6 + j + 1, 3859 + i * 6 + j + 2 )
+            nangle = nangle + 1
 
     # define octadecyl dihedrals
     print "\nDihedrals\n"
@@ -150,6 +186,11 @@ if args.fmt == "lmp":
     for i in range(n_chain-3):
         print "{}	1	{}	{}	{}	{}".format( ndihedral, i + 1, i + 2, i + 3, i + 4 )
         ndihedral = ndihedral + 1
+    for i in range(n_hex):
+        for j in range(3):
+            print "{}	1	{}	{}	{}	{}".format( ndihedral, 3859 + i * 6 + j, 3859 + i * 6 + j + 1, 3859 + i * 6 + j + 2, 3859 + i * 6 + j + 3 )
+            ndihedral = ndihedral + 1
+
 
 
 
