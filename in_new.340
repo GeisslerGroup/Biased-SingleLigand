@@ -12,15 +12,13 @@ dihedral_style	opls				# E = K1/2(1+cos(phi)) + K2/2(1-cos(2phi)) + K3/2(1+cos(3
 
 variable	TargetT equal 340
 
-read_data	new.340
+read_data	singlelig.data
 #read_restart	../restart.${TargetT}
 
-group 		ligand/solvent type 1 2 5 6
 group		ligand type 1 2
-group		solvent type 5 6
 group		xtal type 3 4
 
-compute		MyTemp ligand/solvent temp
+compute		MyTemp ligand temp
 
 variable	xlo equal 0
 variable	xhi equal 82
@@ -49,13 +47,7 @@ pair_coeff	2 2 0.0914 3.95
 pair_coeff	2 3 0.111  3.54			
 pair_coeff	2 4 0.111  3.54			
 pair_coeff	3 3 0.0    0.0
-pair_coeff	3 5 0.143 3.54
-pair_coeff	3 6 0.111 3.54
 pair_coeff	4 4 0   0.0
-pair_coeff	4 5 0.143 3.54
-pair_coeff	4 6 0.111 3.54
-pair_coeff	5 5 0.195 3.75
-pair_coeff	6 6 0.0914 3.95
 
 bond_coeff	* 95.9 1.54			# For all bonds, define K and r0
 
@@ -67,17 +59,17 @@ dihedral_coeff	* 1.4114 -0.2711 3.1458 0	# For all dihedrals, define Ki, note th
 						# Turns off the lj interaction btw 1st, 2nd,
 						# and 3rd nearest neighbours.
 
-thermo		10
+thermo		500
 thermo_style	custom step temp c_MyTemp etotal ke pe 
 #thermo_modify 	flush yes
 
 
 reset_timestep	1
-fix 1 ligand/solvent nvt temp ${TargetT} ${TargetT} 50
+fix 1 ligand nvt temp ${TargetT} ${TargetT} 50
 fix_modify 1 temp MyTemp
-fix plumed all plumed plumedfile cosine.plu outfile cosine.out
-dump		1 all xyz 50 dump.${TargetT}
-run		3000 post no
+# fix plumed all plumed plumedfile cosine.plu outfile cosine.out
+dump		1 all xyz 500 dump.${TargetT}
+run		10000 post no
 write_restart	restart.${TargetT}
 unfix		1
 undump		1
