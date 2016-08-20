@@ -14,12 +14,12 @@ z0 = data[0,3]
 nx = 20
 nz = 12
 n_surf = nx * nz * 16		# number of Cd, S atoms in 4 layers of 12x20 surface grids
-xlo = -100.0
-xhi =  100.0
-ylo = -100.0
-yhi =  100.0
-zlo = -100.0
-zhi =  100.0
+xlo = -5.0
+xhi =  80.0
+ylo = -15.0
+yhi =  50.0
+zlo = -5.0
+zhi =  80.0
 
 # centre the octadecyl chain
 centred_data = np.zeros( (len(data), 3) )
@@ -33,11 +33,11 @@ rotate = np.array([ [np.cos(0.5 * np.pi), -np.sin(0.5 * np.pi), 0], [np.sin(0.5 
 for i in range(n_chain):
     centred_data[i,:] = rotate.dot(centred_data[i,:])
 
-# shift hexane molecules up by 25 A in y-direction
+# shift hexane molecules up by 30 A in y-direction
 centred_hex = np.zeros( (len(hex_data), 3) )
 for i in range(len(hex_data)):
     centred_hex[i,0] = hex_data[i,1]
-    centred_hex[i,1] = hex_data[i,2] + 25.0
+    centred_hex[i,1] = hex_data[i,2]
     centred_hex[i,2] = hex_data[i,3]
 n_hex = len(centred_hex) / 6
 

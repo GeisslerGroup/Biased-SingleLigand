@@ -5,6 +5,7 @@ filetype xyz
 output solvent.xyz
 
 structure hexane.xyz
-  number 500
-  inside box 0. 0. 0. 80. 20. 80.
+  number 1000
+  inside box 0. 0. 0. 80. 50. 80.
+  outside box 20. 0. 26. 26. 22. 28.
 end structure
