@@ -14,11 +14,11 @@ z0 = data[0,3]
 nx = 20
 nz = 12
 n_surf = nx * nz * 16		# number of Cd, S atoms in 4 layers of 12x20 surface grids
-xlo = -5.0
+xlo = -3.0
 xhi =  80.0
 ylo = -15.0
-yhi =  50.0
-zlo = -5.0
+yhi =  60.0
+zlo = -3.0
 zhi =  80.0
 
 # centre the octadecyl chain
