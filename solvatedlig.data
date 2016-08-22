@@ -9,9 +9,9 @@ LAMMPS coordinates for single octadecyl chain on a CdS slab
 1	angle types
 1	dihedral types
 
--3.0 80.0	xlo xhi
+-5.0 80.0	xlo xhi
 -15.0 60.0	ylo yhi
--3.0 80.0	zlo zhi
+-5.0 80.0	zlo zhi
 
 Masses
 

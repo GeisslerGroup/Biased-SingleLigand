@@ -23,14 +23,6 @@ group		xtal type 3 4
 
 compute		MyTemp ligand/solvent temp
 
-variable	xlo equal 0
-variable	xhi equal 82
-variable	ylo equal 35
-variable	yhi equal 50
-variable 	zlo equal 0
-variable	zhi equal 81
-region		BulkSolv block ${xlo} ${xhi} ${ylo} ${yhi} ${zlo} ${zhi} side in units box
-
 # density calculations
 variable	TargetDens equal 0.02587
 variable	xlo equal 40
@@ -39,7 +31,7 @@ variable	ylo equal 30
 variable	yhi equal 45
 variable	zlo equal 40
 variable	zhi equal 65
-region		BulkSolv block EDGE EDGE 78 EDGE EDGE EDGE side in units box
+region		BulkSolv block ${xlo} ${xhi} ${ylo} ${yhi} ${zlo} ${zhi} side in units box
 variable        SolvDens equal count(solvent,BulkSolv)/((v_xhi-v_xlo)*(v_yhi-v_ylo)*(v_zhi-v_zlo))
 
 # Main run
@@ -82,13 +74,13 @@ thermo_style	custom step temp c_MyTemp etotal ke pe v_SolvDens
 
 # adjust density
 reset_timestep	0
-fix		1 ligand/solvent nvt temp ${TargetT} ${TargetT}
+fix		1 ligand/solvent nvt temp ${TargetT} ${TargetT} 50
 fix_modify	1 temp MyTemp
-fix		dens ligand/solvent ave/time 10 2000 20000 v_SolvDens
-fix		2 ligand/solvent deform 10 y vel 0.00001 units box
+fix		dens ligand/solvent ave/time 10 500 5000 v_SolvDens
+fix		2 ligand/solvent deform 50 y vel -0.0005 units box
 dump		1 all xyz 1000 dump.dens
 label loopb
-  run		20000 post no
+  run		5000 post no
   variable	AvgDens equal f_dens
   if		"${AvgDens}>${TargetDens}" then "jump in_new.340 breakb"
   jump		in_new.340 loopb
@@ -103,12 +95,12 @@ jump		in_new.340 runT
 # after density adjustment is done, come here
 label		runT
 reset_timestep	1
-fix 1 ligand/solvent nvt temp ${TargetT} ${TargetT} 50
-fix_modify 1 temp MyTemp
+fix		t ligand/solvent nvt temp ${TargetT} ${TargetT} 50
+fix_modify	t temp MyTemp
 # fix plumed all plumed plumedfile cosine.plu outfile cosine.out
 dump		1 all xyz 1000 dump.${TargetT}
 run		75000 post no
 write_restart	restart.${TargetT}
-unfix		1
+unfix		t
 undump		1
 
