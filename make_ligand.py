@@ -8,6 +8,7 @@ args = parser.parse_args()
 
 data = np.genfromtxt('/home/pratima/Biased-SingleLigand/coords.txt', delimiter=' ')
 hex_data = np.genfromtxt('/home/pratima/Biased-SingleLigand/solvent.txt', delimiter=' ')
+bottom_data = np.genfromtxt('/home/pratima/Biased-SingleLigand/solv_bot.txt', delimiter=' ')
 x0 = data[0,1]
 y0 = data[0,2]
 z0 = data[0,3]
@@ -16,7 +17,7 @@ nz = 12
 n_surf = nx * nz * 16		# number of Cd, S atoms in 4 layers of 12x20 surface grids
 xlo = -5.0
 xhi =  80.0
-ylo = -15.0
+ylo = -55.0
 yhi =  60.0
 zlo = -5.0
 zhi =  80.0
@@ -41,10 +42,18 @@ for i in range(len(hex_data)):
     centred_hex[i,2] = hex_data[i,3]
 n_hex = len(centred_hex) / 6
 
+# format bottom hexane molecules
+bottom_hex = np.zeros( (len(bottom_data), 3) )
+for i in range(len(bottom_data)):
+    bottom_hex[i,0] = bottom_data[i,1]
+    bottom_hex[i,1] = bottom_data[i,2]
+    bottom_hex[i,2] = bottom_data[i,3]
+n_bottom = len(bottom_hex) / 6
+
 # now specify chain coordinates
 # VMD input file generation
 if args.fmt == "xyz":
-    print "{}".format(n_chain + n_surf + n_hex * 6)
+    print "{}".format(n_chain + n_surf + n_hex * 6 + n_bottom * 6)
     print "Comment Line"
     coords = np.copy(centred_data)
     coords[:,0] = coords[:,0] + 4.12 * 6
@@ -79,11 +88,19 @@ if args.fmt == "xyz":
             print "3    {:4.5f} {:4.5f} {:4.5f}".format( coords[0], coords[1] - 7.13848 - 3.5693 - 1.18977, coords[2] + 3.375 )
             print "4    {:4.5f} {:4.5f} {:4.5f}".format( coords[0], coords[1] - 7.13848 - 3.5693 - 1.18977, coords[2] - 3.375 + 2.5299 )
 
+    # top hexane molecules
     for i in range(n_hex * 6):
         if (i%6 == 0 or (i+1)%6 == 0):
-            print "5	{:4.5f}	{:4.5f}	{:4.5f}".format( centred_hex[i, 0], centred_hex[i,1], centred_hex[i,2] )
+            print "5	{:4.5f}	{:4.5f}	{:4.5f}".format( centred_hex[i,0], centred_hex[i,1], centred_hex[i,2] )
         else:
-            print "6	{:4.5f}	{:4.5f}	{:4.5f}".format( centred_hex[i, 0], centred_hex[i,1], centred_hex[i,2] )
+            print "6	{:4.5f}	{:4.5f}	{:4.5f}".format( centred_hex[i,0], centred_hex[i,1], centred_hex[i,2] )
+
+    # bottom hexane molecules
+    for i in range(n_bottom * 6):
+        if (i%6 == 0 or (i+1)%6 == 0):
+            print "5	{:4.5f}	{:4.5f}	{:4.5f}".format( bottom_hex[i,0], bottom_hex[i,1], bottom_hex[i,2] )
+        else:
+            print "6	{:4.5f}	{:4.5f}	{:4.5f}".format( bottom_hex[i,0], bottom_hex[i,1], bottom_hex[i,2] )
 
 # LAMMPS input file generation
 if args.fmt == "lmp":

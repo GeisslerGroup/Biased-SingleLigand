@@ -6,5 +6,5 @@ output solv_bot.xyz
 
 structure hexane.xyz
   number 600
-  inside box 0. 0. 0. 80. 40. 80.
+  inside box 0. -55. 0. 80. -15. 80.
 end structure
