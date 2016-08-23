@@ -1,0 +1,10 @@
+# hexane molecules as solvent
+
+tolerance 2.0
+filetype xyz
+output solv_bot.xyz
+
+structure hexane.xyz
+  number 600
+  inside box 0. 0. 0. 80. 40. 80.
+end structure
