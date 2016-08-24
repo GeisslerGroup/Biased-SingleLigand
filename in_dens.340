@@ -77,20 +77,20 @@ reset_timestep	0
 fix		1 ligand/solvent nvt temp ${TargetT} ${TargetT} 50
 fix_modify	1 temp MyTemp
 fix		dens ligand/solvent ave/time 10 500 5000 v_SolvDens
-fix		2 ligand/solvent deform 50 y vel -0.0005 units box
+fix		2 ligand/solvent deform 10 y vel 0.0001 units box
 dump		1 all xyz 1000 dump.dens
 label loopb
   run		5000 post no
   variable	AvgDens equal f_dens
-  if		"${AvgDens}>${TargetDens}" then "jump in_new.340 breakb"
-  jump		in_new.340 loopb
+  if		"${AvgDens}>${TargetDens}" then "jump in_dens.340 breakb"
+  jump		in_dens.340 loopb
 label breakb
 write_restart	restartdens0.${TargetT}
 unfix		1
 unfix		2
 undump		1
 unfix		dens
-jump		in_new.340 runT
+jump		in_dens.340 runT
 
 # after density adjustment is done, come here
 label		runT
