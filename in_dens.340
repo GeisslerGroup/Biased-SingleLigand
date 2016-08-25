@@ -25,12 +25,12 @@ compute		MyTemp ligand/solvent temp
 
 # density calculations
 variable	TargetDens equal 0.02587
-variable	xlo equal 40
-variable	xhi equal 65
-variable	ylo equal 30
-variable	yhi equal 45
-variable	zlo equal 40
-variable	zhi equal 65
+variable	xlo equal -5.0
+variable	xhi equal 80.0
+variable	ylo equal 15.0
+variable	yhi equal 30.0
+variable	zlo equal -5.0
+variable	zhi equal 80.0
 region		BulkSolv block ${xlo} ${xhi} ${ylo} ${yhi} ${zlo} ${zhi} side in units box
 variable        SolvDens equal count(solvent,BulkSolv)/((v_xhi-v_xlo)*(v_yhi-v_ylo)*(v_zhi-v_zlo))
 
