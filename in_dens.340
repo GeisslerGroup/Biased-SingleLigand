@@ -77,7 +77,7 @@ reset_timestep	0
 fix		1 ligand/solvent nvt temp ${TargetT} ${TargetT} 50
 fix_modify	1 temp MyTemp
 fix		dens ligand/solvent ave/time 10 500 5000 v_SolvDens
-fix		2 ligand/solvent deform 10 y vel 0.0001 units box
+fix		2 ligand/solvent deform 10 y vel -0.0001 units box
 dump		1 all xyz 1000 dump.dens
 label loopb
   run		5000 post no
