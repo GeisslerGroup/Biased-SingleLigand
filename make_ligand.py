@@ -4,6 +4,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-fmt", type=str, choices=["xyz", "lmp"], help="output format")
+parser.add_argument("-addsol", action='store_true', help="whether to add solvent or not")
 args = parser.parse_args()
 
 data = np.genfromtxt('/home/pratima/Biased-SingleLigand/coords.txt', delimiter=' ')
@@ -50,6 +51,10 @@ for i in range(len(bottom_data)):
     bottom_hex[i,2] = bottom_data[i,3]
 n_bottom = len(bottom_hex) / 6
 
+if (not(args.addsol)):
+    n_hex = 0
+    n_bottom = 0
+
 # now specify chain coordinates
 # VMD input file generation
 if args.fmt == "xyz":
@@ -88,19 +93,20 @@ if args.fmt == "xyz":
             print "3    {:4.5f} {:4.5f} {:4.5f}".format( coords[0], coords[1] - 7.13848 - 3.5693 - 1.18977, coords[2] + 3.375 )
             print "4    {:4.5f} {:4.5f} {:4.5f}".format( coords[0], coords[1] - 7.13848 - 3.5693 - 1.18977, coords[2] - 3.375 + 2.5299 )
 
-    # top hexane molecules
-    for i in range(n_hex * 6):
-        if (i%6 == 0 or (i+1)%6 == 0):
-            print "5	{:4.5f}	{:4.5f}	{:4.5f}".format( centred_hex[i,0], centred_hex[i,1], centred_hex[i,2] )
-        else:
-            print "6	{:4.5f}	{:4.5f}	{:4.5f}".format( centred_hex[i,0], centred_hex[i,1], centred_hex[i,2] )
-
-    # bottom hexane molecules
-    for i in range(n_bottom * 6):
-        if (i%6 == 0 or (i+1)%6 == 0):
-            print "5	{:4.5f}	{:4.5f}	{:4.5f}".format( bottom_hex[i,0], bottom_hex[i,1], bottom_hex[i,2] )
-        else:
-            print "6	{:4.5f}	{:4.5f}	{:4.5f}".format( bottom_hex[i,0], bottom_hex[i,1], bottom_hex[i,2] )
+    if args.addsol:
+        # top hexane molecules
+        for i in range(n_hex * 6):
+            if (i%6 == 0 or (i+1)%6 == 0):
+                print "5	{:4.5f}	{:4.5f}	{:4.5f}".format( centred_hex[i,0], centred_hex[i,1], centred_hex[i,2] )
+            else:
+                print "6	{:4.5f}	{:4.5f}	{:4.5f}".format( centred_hex[i,0], centred_hex[i,1], centred_hex[i,2] )
+    
+        # bottom hexane molecules
+        for i in range(n_bottom * 6):
+            if (i%6 == 0 or (i+1)%6 == 0):
+                print "5	{:4.5f}	{:4.5f}	{:4.5f}".format( bottom_hex[i,0], bottom_hex[i,1], bottom_hex[i,2] )
+            else:
+                print "6	{:4.5f}	{:4.5f}	{:4.5f}".format( bottom_hex[i,0], bottom_hex[i,1], bottom_hex[i,2] )
 
 # LAMMPS input file generation
 if args.fmt == "lmp":
@@ -163,26 +169,27 @@ if args.fmt == "lmp":
             print "{}   2      4       {:4.5f} {:4.5f} {:4.5f}".format( natom + 15, coords[0], coords[1] - 7.13848 - 3.5693 - 1.18977, coords[2] - 3.375 + 2.5299 )
             natom = natom + 16
 
-    # top hexane molecules
-    nmol = 3
-    for i in range(n_hex * 6):
-        if (i%6 == 0 or (i+1)%6 == 0):
-            print "{}	{}	5	{:4.5f}	{:4.5f}	{:4.5f}".format( natom, nmol, centred_hex[i, 0], centred_hex[i, 1], centred_hex[i, 2] )
-        else:
-            print "{}	{}	6	{:4.5f}	{:4.5f}	{:4.5f}".format( natom, nmol, centred_hex[i, 0], centred_hex[i, 1], centred_hex[i, 2] )
-        natom = natom + 1
-        if ((i+1)%6 == 0):
-            nmol = nmol + 1
-
-    # bottom hexane molecules
-    for i in range(n_bottom * 6):
-        if (i%6 == 0 or (i+1)%6 == 0):
-            print "{}	{}	5	{:4.5f}	{:4.5f}	{:4.5f}".format( natom, nmol, bottom_hex[i, 0], bottom_hex[i, 1], bottom_hex[i, 2] )
-        else:
-            print "{}	{}	6	{:4.5f}	{:4.5f}	{:4.5f}".format( natom, nmol, bottom_hex[i, 0], bottom_hex[i, 1], bottom_hex[i, 2] )
-        natom = natom + 1
-        if ((i+1)%6 == 0):
-            nmol = nmol + 1
+    if args.addsol:
+        # top hexane molecules
+        nmol = 3
+        for i in range(n_hex * 6):
+            if (i%6 == 0 or (i+1)%6 == 0):
+                print "{}	{}	5	{:4.5f}	{:4.5f}	{:4.5f}".format( natom, nmol, centred_hex[i, 0], centred_hex[i, 1], centred_hex[i, 2] )
+            else:
+                print "{}	{}	6	{:4.5f}	{:4.5f}	{:4.5f}".format( natom, nmol, centred_hex[i, 0], centred_hex[i, 1], centred_hex[i, 2] )
+            natom = natom + 1
+            if ((i+1)%6 == 0):
+                nmol = nmol + 1
+    
+        # bottom hexane molecules
+        for i in range(n_bottom * 6):
+            if (i%6 == 0 or (i+1)%6 == 0):
+                print "{}	{}	5	{:4.5f}	{:4.5f}	{:4.5f}".format( natom, nmol, bottom_hex[i, 0], bottom_hex[i, 1], bottom_hex[i, 2] )
+            else:
+                print "{}	{}	6	{:4.5f}	{:4.5f}	{:4.5f}".format( natom, nmol, bottom_hex[i, 0], bottom_hex[i, 1], bottom_hex[i, 2] )
+            natom = natom + 1
+            if ((i+1)%6 == 0):
+                nmol = nmol + 1
 
     # define atomic bonds for octadecyl and between ligand and corresponding Cd atom
     print "\nBonds\n"
@@ -192,14 +199,16 @@ if args.fmt == "lmp":
         nbond = nbond + 1
     print "{}	1	{}	{}".format( nbond, 1, 1235 )
     nbond = nbond + 1
-    for i in range(n_hex):
-        for j in range(5):
-            print "{}	1	{}	{}".format( nbond, 3859 + i * 6 + j, 3859 + i * 6 + j + 1 )
-            nbond = nbond + 1
-    for i in range(n_bottom):
-        for j in range(5):
-            print "{}	1	{}	{}".format( nbond, 9859 + i * 6 + j, 9859 + i * 6 + j + 1 )
-            nbond = nbond + 1
+
+    if args.addsol:
+        for i in range(n_hex):
+            for j in range(5):
+                print "{}	1	{}	{}".format( nbond, 3859 + i * 6 + j, 3859 + i * 6 + j + 1 )
+                nbond = nbond + 1
+        for i in range(n_bottom):
+            for j in range(5):
+                print "{}	1	{}	{}".format( nbond, 9859 + i * 6 + j, 9859 + i * 6 + j + 1 )
+                nbond = nbond + 1
 
     # define octadecyl angles
     print "\nAngles\n"
@@ -207,14 +216,16 @@ if args.fmt == "lmp":
     for i in range(n_chain-2):
         print "{}	1	{}	{}	{}".format( nangle, i + 1, i + 2, i + 3 )
         nangle = nangle + 1
-    for i in range(n_hex):
-        for j in range(4):
-            print "{}	1	{}	{}	{}".format( nangle, 3859 + i * 6 + j, 3859 + i * 6 + j + 1, 3859 + i * 6 + j + 2 )
-            nangle = nangle + 1
-    for i in range(n_bottom):
-        for j in range(4):
-            print "{}	1	{}	{}	{}".format( nangle, 9859 + i * 6 + j, 9859 + i * 6 + j + 1, 9859 + i * 6 + j + 2 )
-            nangle = nangle + 1
+
+    if args.addsol:
+        for i in range(n_hex):
+            for j in range(4):
+                print "{}	1	{}	{}	{}".format( nangle, 3859 + i * 6 + j, 3859 + i * 6 + j + 1, 3859 + i * 6 + j + 2 )
+                nangle = nangle + 1
+        for i in range(n_bottom):
+            for j in range(4):
+                print "{}	1	{}	{}	{}".format( nangle, 9859 + i * 6 + j, 9859 + i * 6 + j + 1, 9859 + i * 6 + j + 2 )
+                nangle = nangle + 1
 
     # define octadecyl dihedrals
     print "\nDihedrals\n"
@@ -222,14 +233,16 @@ if args.fmt == "lmp":
     for i in range(n_chain-3):
         print "{}	1	{}	{}	{}	{}".format( ndihedral, i + 1, i + 2, i + 3, i + 4 )
         ndihedral = ndihedral + 1
-    for i in range(n_hex):
-        for j in range(3):
-            print "{}	1	{}	{}	{}	{}".format( ndihedral, 3859 + i * 6 + j, 3859 + i * 6 + j + 1, 3859 + i * 6 + j + 2, 3859 + i * 6 + j + 3 )
-            ndihedral = ndihedral + 1
-    for i in range(n_bottom):
-        for j in range(3):
-            print "{}	1	{}	{}	{}	{}".format( ndihedral, 9859 + i * 6 + j, 9859 + i * 6 + j + 1, 9859 + i * 6 + j + 2, 9859 + i * 6 + j + 3 )
-            ndihedral = ndihedral + 1
+
+    if args.addsol:
+        for i in range(n_hex):
+            for j in range(3):
+                print "{}	1	{}	{}	{}	{}".format( ndihedral, 3859 + i * 6 + j, 3859 + i * 6 + j + 1, 3859 + i * 6 + j + 2, 3859 + i * 6 + j + 3 )
+                ndihedral = ndihedral + 1
+        for i in range(n_bottom):
+            for j in range(3):
+                print "{}	1	{}	{}	{}	{}".format( ndihedral, 9859 + i * 6 + j, 9859 + i * 6 + j + 1, 9859 + i * 6 + j + 2, 9859 + i * 6 + j + 3 )
+                ndihedral = ndihedral + 1
 
 
 
