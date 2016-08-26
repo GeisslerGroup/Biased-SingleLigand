@@ -12,8 +12,8 @@ dihedral_style	opls				# E = K1/2(1+cos(phi)) + K2/2(1-cos(2phi)) + K3/2(1+cos(3
 
 variable	TargetT equal 340
 
-# read_data	singlelig.data
-read_data	solvatedlig.data
+read_data	singlelig.data
+# read_data	solvatedlig.data
 #read_restart	../restart.${TargetT}
 
 group		ligand type 1 2
@@ -75,7 +75,7 @@ thermo_style	custom step temp c_MyTemp etotal ke pe
 reset_timestep	1
 fix		1 ligand/solvent nvt temp ${TargetT} ${TargetT} 50
 fix_modify	1 temp MyTemp
-# fix plumed all plumed plumedfile cosine.plu outfile cosine.out
+fix 		plumed all plumed plumedfile cosine.plu outfile cosine.out
 dump		1 all xyz 10 dump.${TargetT}
 run		3000 post no
 write_restart	restart.${TargetT}
