@@ -62,11 +62,11 @@ thermo_style	custom step temp c_MyTemp etotal ke pe
 
 
 reset_timestep	1
-fix 1 ligand/solvent nvt temp ${TargetT} ${TargetT} 50
-fix_modify 1 temp MyTemp
-# fix plumed all plumed plumedfile cosine.plu outfile cosine.out
+fix		1 ligand/solvent nvt temp ${TargetT} ${TargetT} 50
+fix_modify	1 temp MyTemp
+fix		plumed all plumed plumedfile cosine.plu outfile cosine.out
 dump		1 all xyz 1000 dump.${TargetT}
-run		1000000 post no
+run		100000 post no
 write_restart	restart.${TargetT}
 unfix		1
 undump		1
