@@ -2,15 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 
-temp = 2.0
-k = 2.0
+temp = 340.0
 
-namelist = np.arange(-20.0, 21.0, 1.0)
-# namelist = np.arange(-5.0, 6.0, 1.0)
-# namelist = np.arange(-2.0, 3.0, 1.0)
-# namelist = [0.0]
+namelist = np.arange(-0.80, -0.25, 0.05)
+# namelist = [-0.40]
 N_sims = len(namelist)
-bins = np.linspace(-22.0, 22.0, 400)
+bins = np.linspace(-0.85, -0.2, 200)
 bins_OG = bins[1:] * 0.5 + bins[:-1] * 0.5 
 N_theta = np.zeros(len(bins_OG))
 M_alpha = np.zeros(N_sims)
@@ -22,7 +19,7 @@ count = 0
 # populate M_alpha and N_theta
 for i in namelist:
     c = next(color)
-    data = np.genfromtxt('/home/pratima/UmbrellaSampling-Test/traj' + str(i) + '00000.txt', delimiter=' ')
+    data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '.txt', delimiter=' ')
     total_prob, bins = np.histogram(data[:,1], bins=bins)
     bin_centres = 0.5 * bins[1:] + 0.5 * bins[:-1]
 
@@ -32,7 +29,7 @@ for i in namelist:
     for j in range(len(bin_centres)):
         N_theta[j] = N_theta[j] + total_prob[j]
 
-    bias_en = 0.5 * 20.0 * k * (bin_centres - i) * (bin_centres - i)
+    bias_en = 0.5 * 5000.0 * (bin_centres - i) * (bin_centres - i)
     pot_list.append(bias_en)
 
 tol = 1.0e-6

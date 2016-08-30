@@ -7,16 +7,12 @@ parser.add_argument("-w", action='store_true', help="add weights while shifting 
 parser.add_argument("-left_del", action='store_true', help="remove left endpoint of data")
 args = parser.parse_args()
 
-temp = 2.0
-k = 2.0
+temp = 340.0
 
-namelist = np.arange(-20.0, 21.0, 1.0)
-# namelist = np.arange(-5.0, 6.0, 1.0)
-# namelist = np.arange(-2.0, 3.0, 1.0)
-# namelist = [0.0]
+namelist = np.arange(-0.80, -0.25, 0.05)
+# namelist = [-0.40]
 N_sims = len(namelist)
-bins = np.linspace(-30.0, 30.0, 400)
-# bins = np.linspace(-30.0, 30.0, 200)
+bins = np.linspace(-0.85, -0.2, 200)
 bins_OG = bins[1:] * 0.5 + bins[:-1] * 0.5 
 
 color = iter(plt.cm.copper(np.linspace(0,1,N_sims)))
@@ -40,7 +36,7 @@ for i in namelist:
     total_prob = total_prob[total_prob!=0]
 
     free_en = -temp * np.log(total_prob)
-    bias_en = 0.5 * 20.0 * k * (bin_centres - i) * (bin_centres - i)
+    bias_en = 0.5 * 5000.0 * (bin_centres - i) * (bin_centres - i)
     free_en = free_en - bias_en
     err_en = temp * err_prob / total_prob
     en_list.append(free_en)
