@@ -29,7 +29,7 @@ pot_list = []
 # get probability distributions and unbias them
 for i in namelist:
     c = next(color)
-    data = np.genfromtxt('/home/pratima/UmbrellaSampling-Test/traj' + str(i) + '00000.txt', delimiter=' ')
+    data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '.txt', delimiter=' ')
     total_prob, bins = np.histogram(data[:,1], bins=bins)
 
     bin_centres = 0.5 * bins[1:] + 0.5 * bins[:-1]
