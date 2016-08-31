@@ -5,9 +5,14 @@ import argparse
 
 parser = argparse.ArgumentParser(description="")
 parser.add_argument("-bias", type=str, help="bias value to analyse")
+parser.add_argument("-full", action='store_true', help="anaylse long unbiased trajectory?")
 args = parser.parse_args()
 
-data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/lig.' + args.bias, delimiter=' ')
+if args.full:
+    data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/lig.long', delimiter=' ')
+else:
+    data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/lig.' + args.bias, delimiter=' ')
+
 size = len(data)
 x0 = 0.0
 y0 = 0.0
@@ -15,7 +20,10 @@ z0 = 0.0
 x1 = 0.0
 y1 = 0.0
 z1 = 0.0
-f = open("theta" + args.bias + ".txt","w")
+if args.full:
+    f = open("theta-long.txt","w")
+else:
+    f = open("theta" + args.bias + ".txt","w")
 
 for i in range (0,size,18):
   if (i + 17 < size):
@@ -33,3 +41,16 @@ for i in range (0,size,18):
     f.write("%4.5f\n" %(th))
 
 f.close()
+
+if args.full:
+    hist_data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta-long.txt', delimiter=' ')
+else:
+    hist_data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + args.bias + '.txt', delimiter=' ')
+bins = np.linspace(0, 100, 100)
+hist, bins = np.histogram(hist_data, bins = bins, density = True)
+bin_centres = bins[1:] * 0.5 + bins[:-1] * 0.5
+plt.figure()
+plt.plot(bin_centres, hist)
+plt.show()
+
+
