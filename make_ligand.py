@@ -199,7 +199,7 @@ if args.fmt == "lmp":
     for i in range(n_chain-1):
         print "{}	1	{}	{}".format( nbond, i + 1, i + 2 )
         nbond = nbond + 1
-    print "{}	1	{}	{}".format( nbond, 1, 450 )
+    print "{}	1	{}	{}".format( nbond, 1, 451 )
     nbond = nbond + 1
 
     if args.addsol:
