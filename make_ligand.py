@@ -13,8 +13,8 @@ bottom_data = np.genfromtxt('/home/pratima/Biased-SingleLigand/solv_bot.txt', de
 x0 = data[0,1]
 y0 = data[0,2]
 z0 = data[0,3]
-nx = 20
-nz = 12
+nx = 6
+nz = 5
 n_surf = nx * nz * 16		# number of Cd, S atoms in 4 layers of 12x20 surface grids
 xlo = -5.0
 xhi =  80.0
@@ -35,6 +35,7 @@ rotate = np.array([ [np.cos(0.5 * np.pi), -np.sin(0.5 * np.pi), 0], [np.sin(0.5 
 for i in range(n_chain):
     centred_data[i,:] = rotate.dot(centred_data[i,:])
 
+sol_start = n_chain + n_surf
 # shift hexane molecules up by 30 A in y-direction
 centred_hex = np.zeros( (len(hex_data), 3) )
 for i in range(len(hex_data)):
@@ -43,6 +44,7 @@ for i in range(len(hex_data)):
     centred_hex[i,2] = hex_data[i,3]
 n_hex = len(centred_hex) / 6
 
+bot_start = sol_start + n_nex * 6
 # format bottom hexane molecules
 bottom_hex = np.zeros( (len(bottom_data), 3) )
 for i in range(len(bottom_data)):
@@ -61,8 +63,8 @@ if args.fmt == "xyz":
     print "{}".format(n_chain + n_surf + n_hex * 6 + n_bottom * 6)
     print "Comment Line"
     coords = np.copy(centred_data)
-    coords[:,0] = coords[:,0] + 4.12 * 6
-    coords[:,2] = coords[:,2] + 6.75 * 4
+    coords[:,0] = coords[:,0] + 4.12 * 3
+    coords[:,2] = coords[:,2] + 6.75 * 2
     for i in range(n_chain):
         if (i == n_chain-1):
             print "1	{:4.5f}	{:4.5f}	{:4.5f}".format(coords[i,0], coords[i,1], coords[i,2])
@@ -137,8 +139,8 @@ if args.fmt == "lmp":
     print "Atoms\n"
     natom = 1
     coords = np.copy(centred_data)
-    coords[:,0] = coords[:,0] + 4.12 * 6
-    coords[:,2] = coords[:,2] + 6.75 * 4
+    coords[:,0] = coords[:,0] + 4.12 * 3
+    coords[:,2] = coords[:,2] + 6.75 * 2
     for i in range(n_chain):
         if (i == n_chain-1):
             print "{}	1	1	{:4.5f}	{:4.5f}	{:4.5f}".format( natom, coords[i, 0], coords[i, 1], coords[i, 2]  )
@@ -197,17 +199,17 @@ if args.fmt == "lmp":
     for i in range(n_chain-1):
         print "{}	1	{}	{}".format( nbond, i + 1, i + 2 )
         nbond = nbond + 1
-    print "{}	1	{}	{}".format( nbond, 1, 1235 )
+    print "{}	1	{}	{}".format( nbond, 1, 306 )
     nbond = nbond + 1
 
     if args.addsol:
         for i in range(n_hex):
             for j in range(5):
-                print "{}	1	{}	{}".format( nbond, 3859 + i * 6 + j, 3859 + i * 6 + j + 1 )
+                print "{}	1	{}	{}".format( nbond, sol_start + i * 6 + j, sol_start + i * 6 + j + 1 )
                 nbond = nbond + 1
         for i in range(n_bottom):
             for j in range(5):
-                print "{}	1	{}	{}".format( nbond, 9859 + i * 6 + j, 9859 + i * 6 + j + 1 )
+                print "{}	1	{}	{}".format( nbond, bot_start + i * 6 + j, bot_start + i * 6 + j + 1 )
                 nbond = nbond + 1
 
     # define octadecyl angles
@@ -220,11 +222,11 @@ if args.fmt == "lmp":
     if args.addsol:
         for i in range(n_hex):
             for j in range(4):
-                print "{}	1	{}	{}	{}".format( nangle, 3859 + i * 6 + j, 3859 + i * 6 + j + 1, 3859 + i * 6 + j + 2 )
+                print "{}	1	{}	{}	{}".format( nangle, sol_start + i * 6 + j, sol_start + i * 6 + j + 1, sol_start + i * 6 + j + 2 )
                 nangle = nangle + 1
         for i in range(n_bottom):
             for j in range(4):
-                print "{}	1	{}	{}	{}".format( nangle, 9859 + i * 6 + j, 9859 + i * 6 + j + 1, 9859 + i * 6 + j + 2 )
+                print "{}	1	{}	{}	{}".format( nangle, bot_start + i * 6 + j, bot_start + i * 6 + j + 1, bot_start + i * 6 + j + 2 )
                 nangle = nangle + 1
 
     # define octadecyl dihedrals
@@ -237,11 +239,11 @@ if args.fmt == "lmp":
     if args.addsol:
         for i in range(n_hex):
             for j in range(3):
-                print "{}	1	{}	{}	{}	{}".format( ndihedral, 3859 + i * 6 + j, 3859 + i * 6 + j + 1, 3859 + i * 6 + j + 2, 3859 + i * 6 + j + 3 )
+                print "{}	1	{}	{}	{}	{}".format( ndihedral, sol_start + i * 6 + j, sol_start + i * 6 + j + 1, sol_start + i * 6 + j + 2, sol_start + i * 6 + j + 3 )
                 ndihedral = ndihedral + 1
         for i in range(n_bottom):
             for j in range(3):
-                print "{}	1	{}	{}	{}	{}".format( ndihedral, 9859 + i * 6 + j, 9859 + i * 6 + j + 1, 9859 + i * 6 + j + 2, 9859 + i * 6 + j + 3 )
+                print "{}	1	{}	{}	{}	{}".format( ndihedral, bot_start + i * 6 + j, bot_start + i * 6 + j + 1, bot_start + i * 6 + j + 2, bot_start + i * 6 + j + 3 )
                 ndihedral = ndihedral + 1
 
 
