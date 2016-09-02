@@ -9,6 +9,11 @@ parser.add_argument("-full", action='store_true', help="anaylse long unbiased tr
 args = parser.parse_args()
 
 if args.full:
+    save = "hist_nobias.png"
+else:
+    save = "hist" + args.bias + ".png"
+
+if args.full:
     data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/lig.long', delimiter=' ')
 else:
     data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/lig.' + args.bias, delimiter=' ')
@@ -51,6 +56,6 @@ hist, bins = np.histogram(hist_data, bins = bins, density = True)
 bin_centres = bins[1:] * 0.5 + bins[:-1] * 0.5
 plt.figure()
 plt.plot(bin_centres, hist)
-plt.show()
-
+# plt.show()
+plt.savefig(save)
 
