@@ -194,12 +194,13 @@ if args.fmt == "lmp":
                 nmol = nmol + 1
 
     # define atomic bonds for octadecyl and between ligand and corresponding Cd atom
+    bound_index = 451
     print "\nBonds\n"
     nbond = 1
     for i in range(n_chain-1):
         print "{}	1	{}	{}".format( nbond, i + 1, i + 2 )
         nbond = nbond + 1
-    print "{}	1	{}	{}".format( nbond, 1, 451 )
+    print "{}	1	{}	{}".format( nbond, 1, bound_index )
     nbond = nbond + 1
 
     if args.addsol:
