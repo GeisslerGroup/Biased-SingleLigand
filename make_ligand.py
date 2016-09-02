@@ -13,15 +13,15 @@ bottom_data = np.genfromtxt('/home/pratima/Biased-SingleLigand/solv_bot.txt', de
 x0 = data[0,1]
 y0 = data[0,2]
 z0 = data[0,3]
-nx = 6
-nz = 5
+nx = 9
+nz = 6
 n_surf = nx * nz * 16		# number of Cd, S atoms in 4 layers of 12x20 surface grids
 xlo = -5.0
-xhi =  80.0
+xhi =  31.0
 ylo = -60.0
 yhi =  60.0
-zlo = -5.0
-zhi =  80.0
+zlo = -1.0
+zhi =  37.5
 
 # centre the octadecyl chain
 centred_data = np.zeros( (len(data), 3) )
@@ -44,7 +44,7 @@ for i in range(len(hex_data)):
     centred_hex[i,2] = hex_data[i,3]
 n_hex = len(centred_hex) / 6
 
-bot_start = sol_start + n_nex * 6
+bot_start = sol_start + n_hex * 6
 # format bottom hexane molecules
 bottom_hex = np.zeros( (len(bottom_data), 3) )
 for i in range(len(bottom_data)):
@@ -63,8 +63,8 @@ if args.fmt == "xyz":
     print "{}".format(n_chain + n_surf + n_hex * 6 + n_bottom * 6)
     print "Comment Line"
     coords = np.copy(centred_data)
-    coords[:,0] = coords[:,0] + 4.12 * 3
-    coords[:,2] = coords[:,2] + 6.75 * 2
+    coords[:,0] = coords[:,0] + 4.12 * 4
+    coords[:,2] = coords[:,2] + 6.75 * 3
     for i in range(n_chain):
         if (i == n_chain-1):
             print "1	{:4.5f}	{:4.5f}	{:4.5f}".format(coords[i,0], coords[i,1], coords[i,2])
@@ -139,8 +139,8 @@ if args.fmt == "lmp":
     print "Atoms\n"
     natom = 1
     coords = np.copy(centred_data)
-    coords[:,0] = coords[:,0] + 4.12 * 3
-    coords[:,2] = coords[:,2] + 6.75 * 2
+    coords[:,0] = coords[:,0] + 4.12 * 4
+    coords[:,2] = coords[:,2] + 6.75 * 3
     for i in range(n_chain):
         if (i == n_chain-1):
             print "{}	1	1	{:4.5f}	{:4.5f}	{:4.5f}".format( natom, coords[i, 0], coords[i, 1], coords[i, 2]  )
