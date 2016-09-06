@@ -30,7 +30,12 @@ if args.full:
 else:
     f = open("theta" + args.bias + ".txt","w")
 
-for i in range (0,size,18):
+if args.full:
+    start = 100 * 18
+else:
+    start = 100 * 18
+
+for i in range (start,size,18):
   if (i + 17 < size):
     x0 = data[i,1]
     y0 = data[i,2]
