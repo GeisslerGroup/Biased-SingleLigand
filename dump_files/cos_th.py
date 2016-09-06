@@ -56,6 +56,8 @@ if args.full:
     hist_data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta-long.txt', delimiter=' ')
 else:
     hist_data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + args.bias + '.txt', delimiter=' ')
+
+print np.mean(hist_data)
 bins = np.linspace(0, 100, 100)
 hist, bins = np.histogram(hist_data, bins = bins, density = True)
 bin_centres = bins[1:] * 0.5 + bins[:-1] * 0.5
