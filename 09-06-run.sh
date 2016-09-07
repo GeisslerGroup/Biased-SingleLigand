@@ -1,3 +1,44 @@
+#!/bin/bash
+set -o nounset
+set -o errexit
+
+tempfile=$(mktemp in_XXXXX.txt)
+tempcode=$(echo $tempfile | cut -d"_" -f2 | cut -d'.' -f1)
+echo $tempcode
+biastemp="bias_${tempcode}.plu"
+
+biasval=${1?Pass bias mean(?????) to execute}
+
+cat << BIAS > $biastemp
+d1: DISTANCE ATOMS=1,9 COMPONENTS
+
+MATHEVAL ...
+LABEL=theta
+ARG=d1.x,d1.y,d1.z
+FUNC=atan(sqrt(x*x+z*z)/y)
+PERIODIC={-pi,pi}
+... MATHEVAL
+
+RESTRAINT ARG=theta AT=${biasval} KAPPA=500.0 LABEL=restraint
+
+PRINT ARG=theta STRIDE=10
+BIAS
+
+#d1: DISTANCE ATOMS=1,9 COMPONENTS
+#
+#MATHEVAL ...
+#LABEL=xdist
+#ARG=d1.x,d1.z
+#FUNC=sqrt(x*x+y*y)
+#PERIODIC=NO
+#... MATHEVAL
+#
+#RESTRAINT ARG=xdist AT=${biasval} KAPPA=5000.0 LABEL=restraint
+#
+#PRINT ARG=xdist STRIDE=10
+#BIAS
+
+cat << HERE > $tempfile
 # Hex xtal + ligands + ligand-xtal interactions
 
 # initialization
@@ -14,7 +55,7 @@ variable	TargetT equal 340
 
 read_data	singlelig.data
 # read_data	solvatedlig.data
-#read_restart	../restart.${TargetT}
+#read_restart	../restart.\${TargetT}
 
 group		ligand type 1 2
 group		solvent type 5 6
@@ -31,7 +72,7 @@ variable	ylo equal 30
 variable	yhi equal 45
 variable	zlo equal 40
 variable	zhi equal 65
-# region		BulkSolv block ${xlo} ${xhi} ${ylo} ${yhi} ${zlo} ${zhi} side in units box
+# region		BulkSolv block \${xlo} \${xhi} \${ylo} \${yhi} \${zlo} \${zhi} side in units box
 # variable        SolvDens equal count(solvent,BulkSolv)/((v_xhi-v_xlo)*(v_yhi-v_ylo)*(v_zhi-v_zlo))
 
 # Main run
@@ -73,12 +114,15 @@ thermo_style	custom step temp c_MyTemp etotal ke pe
 #thermo_modify 	flush yes
 
 reset_timestep	1
-fix		1 ligand/solvent nvt temp ${TargetT} ${TargetT} 50
+fix		1 ligand/solvent nvt temp \${TargetT} \${TargetT} 50
 fix_modify	1 temp MyTemp
-fix 		plumed all plumed plumedfile distance.plu outfile distance.out
-dump		1 all xyz 10 dump.${TargetT}
+fix 		plumed all plumed plumedfile ${biastemp} outfile distance_${biasval}.out
+dump		1 all xyz 10 dump${biasval}-${tempcode}.\${TargetT}
 run		3000 post no
-write_restart	restart.${TargetT}
+write_restart	restart.\${TargetT}
 unfix		1
 undump		1
+HERE
 
+lmp_plumed -in ${tempfile} -log log-${biasval}.lammps
+cp dump${biasval}-${tempcode}.340 dump.xyz
