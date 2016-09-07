@@ -6,6 +6,7 @@ tempfile=$(mktemp in_XXXXX.txt)
 tempcode=$(echo $tempfile | cut -d"_" -f2 | cut -d'.' -f1)
 echo $tempcode
 biastemp="bias_${tempcode}.plu"
+TargetT=340
 
 biasval=${1?Pass bias mean(?????) to execute}
 
@@ -51,11 +52,11 @@ angle_style	harmonic			# E = K(t-t0)^2
 dihedral_style	opls				# E = K1/2(1+cos(phi)) + K2/2(1-cos(2phi)) + K3/2(1+cos(3phi))
 # atom_modify first command may be useful for full system, put ligands first
 
-variable	TargetT equal 340
+# variable	TargetT equal 340
 
 read_data	singlelig.data
 # read_data	solvatedlig.data
-#read_restart	../restart.\${TargetT}
+#read_restart	../restart.${TargetT}
 
 group		ligand type 1 2
 group		solvent type 5 6
@@ -109,17 +110,17 @@ dihedral_coeff	* 1.4114 -0.2711 3.1458 0	# For all dihedrals, define Ki, note th
 						# Turns off the lj interaction btw 1st, 2nd,
 						# and 3rd nearest neighbours.
 
-thermo		10
+thermo		1000
 thermo_style	custom step temp c_MyTemp etotal ke pe
 #thermo_modify 	flush yes
 
 reset_timestep	1
-fix		1 ligand/solvent nvt temp \${TargetT} \${TargetT} 50
+fix		1 ligand/solvent nvt temp ${TargetT} ${TargetT} 50
 fix_modify	1 temp MyTemp
-fix 		plumed all plumed plumedfile ${biastemp} outfile distance_${biasval}.out
-dump		1 all xyz 10 dump${biasval}-${tempcode}.\${TargetT}
-run		3000 post no
-write_restart	restart.\${TargetT}
+fix 		plumed all plumed plumedfile ${biastemp} outfile cosine${biasval}.out
+dump		1 all xyz 1000 dump${biasval}-${tempcode}.${TargetT}
+run		1000000 post no
+write_restart	restart.${TargetT}
 unfix		1
 undump		1
 HERE
