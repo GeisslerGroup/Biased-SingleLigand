@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import argparse
 
 temp = 340.0
+strength = 2500.0
 
 namelist = np.arange(1.10, 1.45, 0.05)
 # namelist = [-0.40]
@@ -32,7 +33,7 @@ for i in namelist:
     for j in range(len(bin_centres)):
         N_theta[j] = N_theta[j] + total_prob[j]
 
-    bias_en = 0.5 * 500.0 * (bin_centres - i) * (bin_centres - i)
+    bias_en = 0.5 * strength * (bin_centres - i) * (bin_centres - i)
     pot_list.append(bias_en)
 
 tol = 1.0e-6

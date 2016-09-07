@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 temp = 340.0
+strength = 2500.0
 weights = np.genfromtxt('/home/pratima/Biased-SingleLigand/analysis/pot.txt',delimiter=',')
 log_weights = -temp * np.log(weights)
 
@@ -27,7 +28,7 @@ for i in namelist:
     count = count + 1
     for j in range(nbins):
         N_theta[j] = N_theta[j] + total_prob[j]
-    bias_en = 0.5 * 500.0 * (bin_centres - i) * (bin_centres - i)
+    bias_en = 0.5 * strength * (bin_centres - i) * (bin_centres - i)
     pot_list.append(bias_en)
 
 # reconstruct probability distribution

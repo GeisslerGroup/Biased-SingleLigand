@@ -8,6 +8,7 @@ parser.add_argument("-left_del", action='store_true', help="remove left endpoint
 args = parser.parse_args()
 
 temp = 340.0
+strength = 2500.0
 
 namelist = np.arange(1.10, 1.45, 0.05)
 # namelist = [-0.40]
@@ -39,7 +40,7 @@ for i in namelist:
     total_prob = total_prob[total_prob!=0]
 
     free_en = -temp * np.log(total_prob)
-    bias_en = 0.5 * 500.0 * (bin_centres - i) * (bin_centres - i)
+    bias_en = 0.5 * strength * (bin_centres - i) * (bin_centres - i)
     free_en = free_en - bias_en
     err_en = temp * err_prob / total_prob
     en_list.append(free_en)
