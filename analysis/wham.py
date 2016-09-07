@@ -4,10 +4,10 @@ import argparse
 
 temp = 340.0
 
-namelist = np.arange(-0.80, -0.25, 0.05)
+namelist = np.arange(1.10, 1.45, 0.05)
 # namelist = [-0.40]
 N_sims = len(namelist)
-bins = np.linspace(-0.85, -0.2, 200)
+bins = np.linspace(60.0, 90.0, 200)		# angles are between 60 and 90 degrees approximately
 bins_OG = bins[1:] * 0.5 + bins[:-1] * 0.5 
 N_theta = np.zeros(len(bins_OG))
 M_alpha = np.zeros(N_sims)
@@ -19,8 +19,11 @@ count = 0
 # populate M_alpha and N_theta
 for i in namelist:
     c = next(color)
-    data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '.txt', delimiter=' ')
-    total_prob, bins = np.histogram(data[:,1], bins=bins)
+    if (int(i*100)%10 == 0):
+        data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '0.txt', delimiter=' ')
+    else:
+        data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '.txt', delimiter=' ')
+    total_prob, bins = np.histogram(data, bins=bins)
     bin_centres = 0.5 * bins[1:] + 0.5 * bins[:-1]
 
 #     M_alpha[count] = np.sum(total_prob)
@@ -29,7 +32,7 @@ for i in namelist:
     for j in range(len(bin_centres)):
         N_theta[j] = N_theta[j] + total_prob[j]
 
-    bias_en = 0.5 * 5000.0 * (bin_centres - i) * (bin_centres - i)
+    bias_en = 0.5 * 500.0 * (bin_centres - i) * (bin_centres - i)
     pot_list.append(bias_en)
 
 tol = 1.0e-6

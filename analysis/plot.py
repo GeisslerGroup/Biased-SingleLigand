@@ -5,9 +5,9 @@ temp = 340.0
 weights = np.genfromtxt('/home/pratima/Biased-SingleLigand/analysis/pot.txt',delimiter=',')
 log_weights = -temp * np.log(weights)
 
-bins = np.linspace(-0.85, -0.2, 200)
+bins = np.linspace(60.0, 90.0, 200)
 bin_centres = 0.5 * bins[1:] + 0.5 * bins[:-1]
-namelist = np.arange(-0.80, -0.25, 0.05)
+namelist = np.arange(1.10, 1.45, 0.05)
 N_sims = len(namelist)
 nbins = len(bin_centres)
 N_theta = np.zeros(nbins)
@@ -17,13 +17,17 @@ pot_list = []
 # get M_alpha and N_theta
 count = 0
 for i in namelist:
-    data = np.genfromtxt('/home/pratima/Biased-SingleLigand/analysis/theta' + str(i) + '.txt',delimiter=' ')
-    total_prob, bins = np.histogram(data[:,1], bins=bins)
+    if (int(i*100)%10 == 0):
+        data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '0.txt', delimiter=' ')
+    else:
+        data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '.txt', delimiter=' ')
+    total_prob, bins = np.histogram(data, bins=bins)
+
     M_alpha[count] = len(data)
     count = count + 1
     for j in range(nbins):
         N_theta[j] = N_theta[j] + total_prob[j]
-    bias_en = 0.5 * 5000.0 * (bin_centres - i) * (bin_centres - i)
+    bias_en = 0.5 * 500.0 * (bin_centres - i) * (bin_centres - i)
     pot_list.append(bias_en)
 
 # reconstruct probability distribution
