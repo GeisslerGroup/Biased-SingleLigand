@@ -3,9 +3,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 
+temp = 340.0
+
 parser = argparse.ArgumentParser(description="")
 parser.add_argument("-bias", type=str, help="bias value to analyse")
 parser.add_argument("-full", action='store_true', help="anaylse long unbiased trajectory?")
+parser.add_argument("-log", action='store_true', help="plot log of probability")
 args = parser.parse_args()
 
 if args.full:
@@ -48,6 +51,7 @@ for i in range (start,size,18):
     z_vec = z1 - z0
     norm = np.sqrt(x_vec*x_vec + y_vec*y_vec + z_vec*z_vec)
     th = 180 * np.arccos(y_vec/norm)/np.pi
+    th = np.arccos(y_vec/norm)
     f.write("%4.5f\n" %(th))
 
 f.close()
@@ -59,11 +63,16 @@ else:
 
 print np.mean(hist_data)
 print np.std(hist_data)
-bins = np.linspace(0, 100, 100)
+bins = np.linspace(0.70, 1.70, 100)
 hist, bins = np.histogram(hist_data, bins = bins, density = True)
 bin_centres = bins[1:] * 0.5 + bins[:-1] * 0.5
 plt.figure()
-plt.plot(bin_centres, hist)
+if args.log:
+    bin_centres = bin_centres[hist != 0]
+    hist = hist[hist != 0]
+    plt.plot(bin_centres, -np.log(hist))
+else:
+    plt.plot(bin_centres, hist)
 # plt.show()
 plt.savefig(save)
 

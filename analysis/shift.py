@@ -10,10 +10,10 @@ args = parser.parse_args()
 temp = 340.0
 strength = 2500.0
 
-namelist = np.arange(1.10, 1.45, 0.05)
+namelist = np.arange(1.15, 1.405, 0.025)
 # namelist = [-0.40]
 N_sims = len(namelist)
-bins = np.linspace(60.0, 90.0, 200)		# angles are between 60 and 90 degrees approximately
+bins = np.linspace(0.70, 1.70, 200)		# angles are between 60 and 90 degrees approximately
 bins_OG = bins[1:] * 0.5 + bins[:-1] * 0.5 
 
 color = iter(plt.cm.copper(np.linspace(0,1,N_sims)))
@@ -26,8 +26,10 @@ pot_list = []
 # get probability distributions and unbias them
 for i in namelist:
     c = next(color)
-    if (int(i*100)%10 == 0):
+    if (np.ceil(i*1000)%100 == 50):
         data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '0.txt', delimiter=' ')
+    elif (np.ceil(i*1000)%100 == 0):
+        data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '00.txt', delimiter=' ')
     else:
         data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '.txt', delimiter=' ')
     total_prob, bins = np.histogram(data, bins=bins)
@@ -47,6 +49,7 @@ for i in namelist:
     bin_list.append(bin_centres)
     pot_list.append(bias_en)
     err_list.append(err_en)
+
     plt.plot(bin_centres, free_en, color=c)
 #     plt.plot(bin_centres, total_prob, color=c)
 #     plt.errorbar(bin_centres, free_en, err_en, color=c)
