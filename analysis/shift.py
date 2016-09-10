@@ -19,6 +19,7 @@ bins_OG = bins[1:] * 0.5 + bins[:-1] * 0.5
 color = iter(plt.cm.copper(np.linspace(0,1,N_sims)))
 plt.figure(0)
 en_list = []
+prob_list = []
 bin_list = []
 err_list = []
 pot_list = []
@@ -45,6 +46,7 @@ for i in namelist:
     bias_en = 0.5 * strength * (bin_centres - i) * (bin_centres - i)
     free_en = free_en - bias_en
     err_en = temp * err_prob / total_prob
+    prob_list.append(total_prob)
     en_list.append(free_en)
     bin_list.append(bin_centres)
     pot_list.append(bias_en)
@@ -81,7 +83,9 @@ for i in range(1, len(bin_list)):
     mask_plus  =  np.array([ x1 in bin_list[i-1] for x1 in bin_list[i] ])
     en_plus = en_list[i][mask_plus]
     en_minus = en_list[i-1][mask_minus]
-    err_plus = en_list[i][mask_plus]
+    prob_plus = prob_list[i][mask_plus]
+    prob_minus = prob_list[i-1][mask_minus]
+    err_plus = err_list[i][mask_plus]
     err_minus = err_list[i-1][mask_minus]
 #     print en_plus.shape
 #     print en_minus.shape
@@ -96,9 +100,15 @@ for i in range(1, len(bin_list)):
 # en_list = np.array(en_list)
 zero = min( [ min(arr) for arr in en_list ] )
 
+log_prob = []
+for row in prob_list:
+    log_prob.append(-np.log(row))
+zero_prob = min( [ min(arr) for arr in log_prob ] )
+
 plt.figure(1)
 for i in range(len(bin_list)):
-    plt.plot(bin_list[i], en_list[i] - zero, color='red')
+#     plt.plot(bin_list[i], en_list[i] - zero, color='red')
+    plt.plot(bin_list[i], log_prob[i] - zero_prob, color='red')
 plt.show()
 
 
