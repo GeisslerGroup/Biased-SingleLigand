@@ -65,7 +65,7 @@ reset_timestep	1
 fix		1 ligand/solvent nvt temp ${TargetT} ${TargetT} 50
 fix_modify	1 temp MyTemp
 dump		1 all xyz 1000 dump.nobias.${TargetT}
-run		10000000 post no
+run		50000000 post no
 write_restart	restart.${TargetT}
 unfix		1
 undump		1

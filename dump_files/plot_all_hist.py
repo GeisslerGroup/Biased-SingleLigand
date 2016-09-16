@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 namelist = np.arange(1.15,1.405,0.025)
-bins = np.linspace(40.0, 100.0, 100)
+bins = np.linspace(0.70, 1.70, 100)
 bins_OG = bins[1:] * 0.5 + bins[:-1] * 0.5
 
 N_sims = len(namelist)
@@ -18,8 +18,8 @@ for i in namelist:
     else:
         data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '.txt', delimiter=' ')
     total_prob, bins = np.histogram(data, bins=bins, density=True)
-    theta = i * 180.0 / np.pi
 
+    theta = i 
     plt.plot(bins_OG, total_prob, color=c, label="centred at theta = %3.1f" %theta)
 plt.legend(loc='upper left')
 plt.show()
