@@ -63,7 +63,7 @@ else:
 
 print np.mean(hist_data)
 print np.std(hist_data)
-bins = np.linspace(0.70, 1.70, 100)
+bins = np.linspace(0.40, 1.70, 100)
 hist, bins = np.histogram(hist_data, bins = bins, density = True)
 bin_centres = bins[1:] * 0.5 + bins[:-1] * 0.5
 plt.figure()

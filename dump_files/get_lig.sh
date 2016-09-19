@@ -1,6 +1,6 @@
 #!/bin/bash --login
 
-biaslist=$(seq 1.150 0.025 1.400)
+biaslist=$(seq 0.70 0.05 1.40)
 
 for bias in ${biaslist}
 do

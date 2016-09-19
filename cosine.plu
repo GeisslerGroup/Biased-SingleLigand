@@ -7,7 +7,7 @@ FUNC=atan(sqrt(x*x+z*z)/y)
 PERIODIC={-pi,pi}
 ... MATHEVAL
 
-RESTRAINT ARG=theta AT=1.05 KAPPA=2500.0 LABEL=restraint
+RESTRAINT ARG=theta AT=1.4 KAPPA=2500.0 LABEL=restraint
 
 PRINT ARG=theta STRIDE=10
 
