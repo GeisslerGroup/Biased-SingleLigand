@@ -9,9 +9,9 @@ log_weights = -temp * np.log(weights)
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
-bins = np.linspace(0.70, 1.70, 200)
+bins = np.linspace(0.40, 1.70, 200)
 bin_centres = 0.5 * bins[1:] + 0.5 * bins[:-1]
-namelist = np.arange(1.15, 1.405, 0.025)
+namelist = np.arange(0.70, 1.45, 0.05)
 N_sims = len(namelist)
 nbins = len(bin_centres)
 N_theta = np.zeros(nbins)
@@ -25,10 +25,11 @@ pot_list = []
 # get M_alpha and N_theta
 count = 0
 for i in namelist:
-    if (np.ceil(i*1000)%100 == 50):
+#     if (np.ceil(i*1000)%100 == 50):
+    if (int(i*100)%10 == 0):
         data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '0.txt', delimiter=' ')
-    elif (np.ceil(i*1000)%100 == 0):
-        data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '00.txt', delimiter=' ')
+#     elif (np.ceil(i*1000)%100 == 0):
+#         data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '00.txt', delimiter=' ')
     else:
         data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '.txt', delimiter=' ')
 

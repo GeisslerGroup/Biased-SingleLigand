@@ -11,9 +11,10 @@ temp = 340.0
 strength = 2500.0
 
 namelist = np.arange(1.15, 1.405, 0.025)
+namelist = np.arange(0.70, 1.45, 0.05)
 # namelist = [-0.40]
 N_sims = len(namelist)
-bins = np.linspace(0.70, 1.70, 200)		# angles are between 60 and 90 degrees approximately
+bins = np.linspace(0.40, 1.70, 200)		# angles are between 60 and 90 degrees approximately
 bins_OG = bins[1:] * 0.5 + bins[:-1] * 0.5 
 
 color = iter(plt.cm.copper(np.linspace(0,1,N_sims)))
@@ -27,10 +28,11 @@ pot_list = []
 # get probability distributions and unbias them
 for i in namelist:
     c = next(color)
-    if (np.ceil(i*1000)%100 == 50):
+#     if (np.ceil(i*1000)%100 == 50):
+    if (int(i*100)%10 == 0):
         data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '0.txt', delimiter=' ')
-    elif (np.ceil(i*1000)%100 == 0):
-        data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '00.txt', delimiter=' ')
+#     elif (np.ceil(i*1000)%100 == 0):
+#         data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '00.txt', delimiter=' ')
     else:
         data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '.txt', delimiter=' ')
     total_prob, bins = np.histogram(data, bins=bins)
