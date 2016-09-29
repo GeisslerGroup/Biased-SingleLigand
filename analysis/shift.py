@@ -8,6 +8,8 @@ parser.add_argument("-left_del", action='store_true', help="remove left endpoint
 args = parser.parse_args()
 
 temp = 340.0
+kBT = 0.6731
+beta = 1 / (kBT)
 strength = 2500.0
 
 namelist = np.arange(1.15, 1.405, 0.025)
@@ -38,16 +40,18 @@ for i in namelist:
     total_prob, bins = np.histogram(data, bins=bins)
 
     bin_centres = 0.5 * bins[1:] + 0.5 * bins[:-1]
+    err_prob = np.sqrt(total_prob)
     norm = np.sum(total_prob) * 1.0
     total_prob = total_prob / norm
-    err_prob = np.std(total_prob, ddof=1)
+    err_prob = err_prob / norm
     bin_centres = bin_centres[total_prob!=0]
+    err_prob = err_prob[total_prob != 0]
     total_prob = total_prob[total_prob!=0]
 
-    free_en = -temp * np.log(total_prob)
-    bias_en = 0.5 * strength * (bin_centres - i) * (bin_centres - i)
+    free_en = np.log(total_prob)
+    bias_en = 0.5 * strength * (bin_centres - i) * (bin_centres - i) * beta
     free_en = free_en - bias_en
-    err_en = temp * err_prob / total_prob
+    err_en = err_prob / total_prob
     prob_list.append(total_prob)
     en_list.append(free_en)
     bin_list.append(bin_centres)
@@ -109,8 +113,8 @@ zero_prob = min( [ min(arr) for arr in log_prob ] )
 
 plt.figure(1)
 for i in range(len(bin_list)):
-#     plt.plot(bin_list[i], en_list[i] - zero, color='red')
-    plt.plot(bin_list[i], log_prob[i] - zero_prob, color='red')
+    plt.plot(bin_list[i], (en_list[i] - zero) / beta, color='red')
+#     plt.plot(bin_list[i], log_prob[i] - zero_prob, color='red')
 plt.show()
 
 

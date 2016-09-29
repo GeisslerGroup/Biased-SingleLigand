@@ -3,9 +3,12 @@ import matplotlib.pyplot as plt
 import argparse
 
 temp = 340.0
+kBT = 0.6731
+beta = 1/(kBT)
 strength = 2500.0
+# strength = 100.0
 
-namelist = np.arange(1.15, 1.405, 0.025)
+# namelist = np.arange(1.15, 1.405, 0.025)
 namelist = np.arange(0.70, 1.45, 0.05)
 # namelist = [-0.40]
 N_sims = len(namelist)
@@ -16,10 +19,9 @@ M_alpha = np.zeros(N_sims)
 
 color = iter(plt.cm.copper(np.linspace(0,1,N_sims)))
 
-pot_list = []
-count = 0
+# pot_list = []
 # populate M_alpha and N_theta
-for i in namelist:
+for count, i in enumerate(namelist):
     c = next(color)
     # decide whether to use ceil or int based on which one works (keeps changing :/)
 #     if (np.ceil(i*1000)%100 == 0):
@@ -35,53 +37,55 @@ for i in namelist:
 
 #     M_alpha[count] = np.sum(total_prob)
     M_alpha[count] = len(data)
-    count = count + 1
     for j in range(len(bin_centres)):
         N_theta[j] = N_theta[j] + total_prob[j]
 
-    bias_en = 0.5 * strength * (bin_centres - i) * (bin_centres - i)
-    pot_list.append(bias_en)
+#     bias_en = 0.5 * strength * (bins_OG - i) * (bins_OG - i) * beta
+#     plt.plot(bin_centres, bias_en)
+#     pot_list.append(bias_en)
+
+plt.show()
 
 tol = 1.0e-6
 en_diff = 1.0
 en_list = np.ones(N_sims)
-count = 1
-pot_list = np.array(pot_list)
+# pot_list = np.exp(-np.array(pot_list))
 # print pot_list.shape
 # print pot_list[0]
 # print N_theta
 # print M_alpha
 # exit(0)
+pot_list = np.zeros((N_sims, len(bins_OG)))
+# print pot_list.shape
+for count, i in enumerate(namelist):
+#     pot_list[count] = np.exp(-beta * 0.5 * strength * (bins_OG - i) * (bins_OG - i))
+    pot_list[count] = 0.5 * strength * (bins_OG - i) * (bins_OG - i)
+# print pot_list[0]
+# exit(0)
 
 while (en_diff > tol):
     en_diff = 0.0
-    old_en = np.copy(en_list)
+    old_en = np.zeros(len(en_list))
+    old_en[:] = en_list[:]
     denominator = np.zeros(len(N_theta))
 
     # calculate denominator
-    for i in range(len(N_theta)):
-        for j in range(N_sims):
-#             denominator[i] = denominator[i] + M_alpha[j] * np.exp((-pot_list[j][i] - old_en[j]) / temp)
-            denominator[i] = denominator[i] + (M_alpha[j] * np.exp((-pot_list[j][i]) / temp) / old_en[j])
-        if (denominator[i] == 0.0):
-            denominator[i] = 1.0e-6
+    for t_i in range(len(N_theta)):
+#     	denominator[t_i] = np.sum(M_alpha * (pot_list[:,t_i] / old_en))
+#         free_en = np.exp(beta * old_en)
+#         if (np.sum(free_en) != np.sum(free_en)):
+#             print "SHIT"
+#             exit(0)
+    	denominator[t_i] = np.sum( M_alpha * np.exp(-beta * (pot_list[:,t_i] - old_en)) )
 
     # now update free energies
-    for i in range(N_sims):
-        term = 0.0
-        numerator = 0.0
-        for l in range(len(N_theta)):
-            numerator = N_theta[l] * np.exp(-pot_list[i][l] / temp)
-            term = term + (numerator / denominator[l])
-#         term = np.sum(numerator / denominator)
-#         en_list[i] = -temp * np.log(term)
-        en_list[i] = term
+    for s_i in range(N_sims):
+#         en_list[s_i] =  np.sum(N_theta * (pot_list[s_i,:] / denominator))
+        en_list[s_i] =  -kBT * np.log( np.sum(N_theta * (np.exp(-beta * pot_list[s_i,:]) / denominator)) )
 
-    difference = np.zeros(N_sims)
-    for i in range(len(old_en)):
-#         difference[i] = np.abs(en_list[i] - old_en[i])
-        difference[i] = np.abs(en_list[i] / old_en[i])
-        en_diff = en_diff + difference[i]
+    difference = np.abs(en_list - old_en)
+    en_diff = np.sum(difference)
+
     print count
 #     print "numerator", numerator
 #     print "denominator", denominator

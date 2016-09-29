@@ -51,7 +51,7 @@ for i in range (start,size,18):
     z_vec = z1 - z0
     norm = np.sqrt(x_vec*x_vec + y_vec*y_vec + z_vec*z_vec)
     th = 180 * np.arccos(y_vec/norm)/np.pi
-    th = np.arccos(y_vec/norm)
+    th = np.arctan( (x_vec*x_vec + z_vec*z_vec) / y_vec )
     f.write("%4.5f\n" %(th))
 
 f.close()
@@ -63,7 +63,7 @@ else:
 
 print np.mean(hist_data)
 print np.std(hist_data)
-bins = np.linspace(0.40, 1.70, 100)
+bins = np.linspace(0.00, 1.70, 100)
 hist, bins = np.histogram(hist_data, bins = bins, density = True)
 bin_centres = bins[1:] * 0.5 + bins[:-1] * 0.5
 plt.figure()

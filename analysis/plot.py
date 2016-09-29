@@ -2,9 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 temp = 340.0
+beta = 1 / (0.6731)
 strength = 2500.0
 weights = np.genfromtxt('/home/pratima/Biased-SingleLigand/analysis/pot.txt',delimiter=',')
-log_weights = -temp * np.log(weights)
+# log_weights = -np.log(weights) / beta
 
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
@@ -39,7 +40,7 @@ for i in namelist:
     count = count + 1
     for j in range(nbins):
         N_theta[j] = N_theta[j] + total_prob[j]
-    bias_en = 0.5 * strength * (bin_centres - i) * (bin_centres - i)
+    bias_en = 0.5 * strength * (bin_centres - i) * (bin_centres - i) * beta
     pot_list.append(bias_en)
 
 # unbiased distribution from long trajectory
@@ -58,7 +59,7 @@ norm = 0.0
 for i in range(nbins):
     denominator = 0.0
     for j in range(N_sims):
-        denominator = denominator + M_alpha[j] * np.exp(-(pot_list[j][i] - log_weights[j]) / temp)
+        denominator = denominator + M_alpha[j] * np.exp(-(pot_list[j][i] - weights[j]) * beta)
     prob_dist[i] = N_theta[i] / denominator
     norm = norm + prob_dist[i]
 
