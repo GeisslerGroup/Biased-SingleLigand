@@ -17,7 +17,7 @@ str_out = str_out + "\nFUNC=atan(sqrt(x*x+z*z)/y)\n"
 str_out = str_out + "PERIODIC={-pi,pi}\n"
 str_out = str_out + "... MATHEVAL\n"
 
-str_out = str_out + "\nRESTRAINT ARG=theta AT={} KAPPA=2500.0 LABEL=restraint\n\nPRINT ARG=theta STRIDE=10\n".format(args.bias)
+str_out = str_out + "\nRESTRAINT ARG=theta AT={} KAPPA=10000.0 LABEL=restraint\n\nPRINT ARG=theta STRIDE=10\n".format(args.bias)
 
 str_out = str_out.rstrip(",")
 print str_out

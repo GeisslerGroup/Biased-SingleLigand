@@ -10,10 +10,11 @@ args = parser.parse_args()
 temp = 340.0
 kBT = 0.6731
 beta = 1 / (kBT)
-strength = 2500.0
+strength = 10000.0
 
 namelist = np.arange(1.15, 1.405, 0.025)
 namelist = np.arange(0.70, 1.45, 0.05)
+namelist = np.arange(1.25, 1.45, 0.05)
 # namelist = [-0.40]
 N_sims = len(namelist)
 bins = np.linspace(0.40, 1.70, 200)		# angles are between 60 and 90 degrees approximately
@@ -113,8 +114,8 @@ zero_prob = min( [ min(arr) for arr in log_prob ] )
 
 plt.figure(1)
 for i in range(len(bin_list)):
-    plt.plot(bin_list[i], (en_list[i] - zero) / beta, color='red')
-#     plt.plot(bin_list[i], log_prob[i] - zero_prob, color='red')
+    plt.plot(bin_list[i], (en_list[i] - zero) / kBT)
+#     plt.plot(bin_list[i], np.exp(-beta * (en_list[i] - zero)), color='red')
 plt.show()
 
 

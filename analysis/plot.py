@@ -75,7 +75,7 @@ log_prob = log_prob - zero
 # print prob_dist
 plt.figure()
 # plt.plot(bin_centres, prob_dist,color='red')
-plt.plot(prob_bins, log_prob,color='blue', label='after unbiasing')
+# plt.plot(prob_bins, log_prob,color='blue', label='after unbiasing')
 plt.plot(long_bins, log_long, color='red', label='long simulation')
 plt.xlabel(r'$\theta_z$', fontsize=20)
 plt.ylabel(r'$\log{P(\theta_z)}$', fontsize=20)
