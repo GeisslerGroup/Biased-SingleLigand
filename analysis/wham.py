@@ -2,17 +2,25 @@ import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 
-temp = 340.0
-kBT = 0.6731
-beta = 1/(kBT)
-strength = 2500.0
-# strength = 100.0
+parser = argparse.ArgumentParser()
+parser.add_argument("-temp", type=float, help="temperature of simulation")
+parser.add_argument("-strength", type=float, help="spring constant used in simulation")
+parser.add_argument("-lower", type=float, default=0.70, help="lowest bias value in simulation")
+parser.add_argument("-upper", type=float, default=1.40, help="highest bias value in simulation")
+parser.add_argument("-step", type=float, default=0.05, help="steps between bias values in simulation")
+args = parser.parse_args()
 
-# namelist = np.arange(1.15, 1.405, 0.025)
-namelist = np.arange(0.70, 1.45, 0.05)
+temp = args.temp
+kBT = 0.593 * temp / 298
+beta = 1 / (kBT)
+# print beta * beta
+strength = args.strength
+
+namelist = np.arange(args.lower, args.upper+args.step, args.step)
+# namelist = np.array(list(np.arange(0.30, 1.15, 0.05)) + list(np.arange(1.20, 1.40, 0.05)))
 # namelist = [-0.40]
 N_sims = len(namelist)
-bins = np.linspace(0.40, 1.70, 200)		# angles are between 60 and 90 degrees approximately
+bins = np.linspace(0.0, 1.70, 100)		# angles are between 60 and 90 degrees approximately
 bins_OG = bins[1:] * 0.5 + bins[:-1] * 0.5 
 N_theta = np.zeros(len(bins_OG))
 M_alpha = np.zeros(N_sims)
@@ -24,13 +32,8 @@ color = iter(plt.cm.copper(np.linspace(0,1,N_sims)))
 for count, i in enumerate(namelist):
     c = next(color)
     # decide whether to use ceil or int based on which one works (keeps changing :/)
-#     if (np.ceil(i*1000)%100 == 0):
-    if (int(i*1000)%100 == 0):
-        data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '0.txt', delimiter=' ')
-#     elif (np.ceil(i*1000)%100 == 0):
-#         data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '00.txt', delimiter=' ')
-    else:
-        data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '.txt', delimiter=' ')
+
+    data = np.genfromtxt("/home/pratima/Biased-SingleLigand/dump_files/theta{:1.2f}.txt".format(i), delimiter=' ')
 
     total_prob, bins = np.histogram(data, bins=bins)
     bin_centres = 0.5 * bins[1:] + 0.5 * bins[:-1]

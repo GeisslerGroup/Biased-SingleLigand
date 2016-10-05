@@ -1,18 +1,31 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import argparse
 
-temp = 340.0
-beta = 1 / (0.6731)
-strength = 2500.0
+parser = argparse.ArgumentParser()
+parser.add_argument("-temp", type=float, help="temperature of simulation")
+parser.add_argument("-strength", type=float, help="spring constant used in simulation")
+parser.add_argument("-lower", type=float, default=0.70, help="lowest bias value in simulation")
+parser.add_argument("-upper", type=float, default=1.40, help="highest bias value in simulation")
+parser.add_argument("-step", type=float, default=0.05, help="steps between bias values in simulation")
+args = parser.parse_args()
+
+temp = args.temp
+kBT = 0.593 * temp / 298 
+beta = 1 / (kBT)
+# print beta * beta
+strength = args.strength 
+
+namelist = np.arange(args.lower, args.upper+args.step, args.step)
+
 weights = np.genfromtxt('/home/pratima/Biased-SingleLigand/analysis/pot.txt',delimiter=',')
 # log_weights = -np.log(weights) / beta
 
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
-bins = np.linspace(0.40, 1.70, 200)
+bins = np.linspace(0.0, 1.70, 100)
 bin_centres = 0.5 * bins[1:] + 0.5 * bins[:-1]
-namelist = np.arange(0.70, 1.45, 0.05)
 N_sims = len(namelist)
 nbins = len(bin_centres)
 N_theta = np.zeros(nbins)
@@ -26,13 +39,7 @@ pot_list = []
 # get M_alpha and N_theta
 count = 0
 for i in namelist:
-#     if (np.ceil(i*1000)%100 == 50):
-    if (int(i*100)%10 == 0):
-        data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '0.txt', delimiter=' ')
-#     elif (np.ceil(i*1000)%100 == 0):
-#         data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '00.txt', delimiter=' ')
-    else:
-        data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta' + str(i) + '.txt', delimiter=' ')
+    data = np.genfromtxt("/home/pratima/Biased-SingleLigand/dump_files/theta{:1.2f}.txt".format(i), delimiter=' ')
 
     total_prob, bins = np.histogram(data, bins=bins)
 
@@ -75,7 +82,7 @@ log_prob = log_prob - zero
 # print prob_dist
 plt.figure()
 # plt.plot(bin_centres, prob_dist,color='red')
-# plt.plot(prob_bins, log_prob,color='blue', label='after unbiasing')
+plt.plot(prob_bins, log_prob,color='blue', label='after unbiasing')
 plt.plot(long_bins, log_long, color='red', label='long simulation')
 plt.xlabel(r'$\theta_z$', fontsize=20)
 plt.ylabel(r'$\log{P(\theta_z)}$', fontsize=20)

@@ -14,6 +14,7 @@ at_range = np.arange(args.at_lower, args.at_upper+args.at_step, args.at_step)
 
 str_out = ""
 
+str_out = str_out + "UNITS ENERGY=kcal/mol\n"
 str_out = str_out + "d1: DISTANCE ATOMS=1,9 COMPONENTS\n"
 
 str_out = str_out + "\nMATHEVAL ...\n"
