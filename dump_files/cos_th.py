@@ -8,6 +8,7 @@ temp = 340.0
 parser = argparse.ArgumentParser(description="")
 parser.add_argument("-bias", type=str, help="bias value to analyse")
 parser.add_argument("-full", action='store_true', help="anaylse long unbiased trajectory?")
+parser.add_argument("-save", action='store_true', help="save plot?")
 parser.add_argument("-log", action='store_true', help="plot log of probability")
 args = parser.parse_args()
 
@@ -75,6 +76,8 @@ if args.log:
     plt.plot(bin_centres, -np.log(hist))
 else:
     plt.plot(bin_centres, hist)
-plt.show()
-# plt.savefig(save)
+if args.save:
+    plt.savefig(save)
+else:
+    plt.show()
 

@@ -36,8 +36,8 @@ pot_list = []
 # get probability distributions and unbias them
 for i in namelist:
     c = next(color)
-#     if ("{:1.2f}".format(i) == "1.15"):
-# 	continue
+    if ("{:1.2f}".format(i) == "1.40"):
+        continue
     string ="/home/pratima/Biased-SingleLigand/dump_files/theta{:1.2f}.txt".format(i)
     print string , i  
     data = np.genfromtxt("/home/pratima/Biased-SingleLigand/dump_files/theta{:1.2f}.txt".format(i), delimiter=' ')
