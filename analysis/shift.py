@@ -53,9 +53,9 @@ for i in namelist:
     total_prob = total_prob[total_prob!=0]
 
     free_en = np.log(total_prob)
-    plt.plot(bin_centres, free_en)
+#     plt.plot(bin_centres, free_en)
     bias_en = 0.5 * strength * (bin_centres - i) * (bin_centres - i) * beta 
-    plt.plot(bin_centres, -bias_en)
+#     plt.plot(bin_centres, -bias_en)
     free_en = free_en + bias_en
     err_en = err_prob / total_prob
     prob_list.append(total_prob)
@@ -64,7 +64,7 @@ for i in namelist:
     pot_list.append(bias_en)
     err_list.append(err_en)
 
-##    plt.plot(bin_centres, free_en, color=c)
+    plt.plot(bin_centres, free_en, color=c)
 #     plt.plot(bin_centres, total_prob)
 #     plt.errorbar(bin_centres, free_en, err_en, color=c)
 

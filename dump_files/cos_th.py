@@ -36,7 +36,7 @@ else:
 if args.full:
     start = 200 * 18
 else:
-    start = 400 * 18
+    start = 2000 * 18
 
 data_spaced = data[200*18::9, :]
 

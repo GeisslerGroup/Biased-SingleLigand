@@ -24,7 +24,7 @@ for i in namelist:
 
     total_prob, bins = np.histogram(data, bins=bins, density=True)
     theta = i 
-    plt.plot(bins_OG, total_prob, color=c, label="centred at theta = %3.1f" %theta)
+    plt.plot(bins_OG, total_prob, color=c, label="centred at theta = %3.2f" %theta)
 plt.legend(loc='best')
 plt.show()
 
