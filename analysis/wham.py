@@ -32,6 +32,8 @@ color = iter(plt.cm.copper(np.linspace(0,1,N_sims)))
 for count, i in enumerate(namelist):
     c = next(color)
     # decide whether to use ceil or int based on which one works (keeps changing :/)
+    if ("{:1.2f}".format(i) == "1.40"):
+        continue
 
     data = np.genfromtxt("/home/pratima/Biased-SingleLigand/dump_files/theta{:1.2f}.txt".format(i), delimiter=' ')
 
@@ -89,15 +91,18 @@ while (en_diff > tol):
     difference = np.abs(en_list - old_en)
     en_diff = np.sum(difference)
 
-    print count
+#     print count
 #     print "numerator", numerator
 #     print "denominator", denominator
-    print en_list
-    print en_diff
+#     print en_list
+#     print en_diff
     count = count + 1
 
-print en_list
-
+str_out = ""
+for en in en_list:
+    str_out = str_out + "{:2.6f},".format(en)
+str_out = str_out.rstrip(",")
+print str_out
 
 
 

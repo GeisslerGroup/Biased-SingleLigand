@@ -36,11 +36,11 @@ pot_list = []
 # get probability distributions and unbias them
 for i in namelist:
     c = next(color)
-    if ("{:1.2f}".format(i) == "1.40"):
-        continue
+#     if ("{:1.2f}".format(i) == "1.40"):
+#         continue
     string ="/home/pratima/Biased-SingleLigand/dump_files/theta{:1.2f}.txt".format(i)
-    print string , i  
-    data = np.genfromtxt("/home/pratima/Biased-SingleLigand/dump_files/theta{:1.2f}.txt".format(i), delimiter=' ')
+#     print string , i  
+    data = np.genfromtxt(string, delimiter=' ')
     total_prob, bins = np.histogram(data, bins=bins)
 
     bin_centres = 0.5 * bins[1:] + 0.5 * bins[:-1]
