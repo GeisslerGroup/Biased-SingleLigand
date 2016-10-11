@@ -82,6 +82,7 @@ plt.show()
 
 full_prob = np.array(full_prob)
 full_err = np.array(full_err)
+full_weight = 1/(full_err * full_err)
 
 if args.left_del:
     print en_list[0]
@@ -159,13 +160,16 @@ print Z.shape
 print full_prob.shape
 for i in range(N_bins):
     mask = (full_prob[:,i] != 0)
-    term = np.sum(full_prob[mask,i] * Z[mask] * full_err[mask,i]) / np.sum(full_err[mask,i])
+    term = np.sum(full_prob[mask,i] * Z[mask] * full_weight[mask,i]) / np.sum(full_weight[mask,i])
+    # only use non-infinite terms (ie, if mask != null)
     if (term == term):
         P_est[i] = term
 
 print P_est
+est_bins = bins_OG[P_est != 0]
+P_est = P_est[P_est != 0]
 plt.figure(2)
-plt.plot(bins_OG, -np.log(P_est))
+plt.plot(est_bins, -np.log(P_est))
 plt.show()
 
 
