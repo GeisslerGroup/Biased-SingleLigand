@@ -25,6 +25,7 @@ N_sims = len(namelist)
 print N_sims
 bins = np.linspace(0.0, 1.70, 100)		# angles are between 60 and 90 degrees approximately
 bins_OG = bins[1:] * 0.5 + bins[:-1] * 0.5 
+N_bins = len(bins_OG)
 
 color = iter(plt.cm.copper(np.linspace(0,1,N_sims)))
 plt.figure(0)
@@ -153,12 +154,19 @@ plt.show()
 Z = np.cumsum(full_shift)
 Z = np.exp(Z)
 Z = np.insert(Z, 0, 1.0)
-P_est = np.zeros(N_sims)
+P_est = np.zeros(N_bins)
 print Z.shape
 print full_prob.shape
-# for i in range(Nbins):
-#     mask = (full_prob[:,i] != 0)
-#     print mask.shape
-#     P_est[i] = np.sum(full_prob[i,:][mask] * Z[mask] * full_err[i,:][mask]) / np.sum(full_err[i,:][mask])
-# 
-# print P_est
+for i in range(N_bins):
+    mask = (full_prob[:,i] != 0)
+    term = np.sum(full_prob[mask,i] * Z[mask] * full_err[mask,i]) / np.sum(full_err[mask,i])
+    if (term == term):
+        P_est[i] = term
+
+print P_est
+plt.figure(2)
+plt.plot(bins_OG, -np.log(P_est))
+plt.show()
+
+
+
