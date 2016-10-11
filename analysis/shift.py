@@ -22,6 +22,7 @@ namelist = np.arange(args.lower, args.upper+args.step, args.step)
 # namelist = np.arange(1.20, 1.40, 0.05)
 # namelist = [-0.40]
 N_sims = len(namelist)
+print N_sims
 bins = np.linspace(0.0, 1.70, 100)		# angles are between 60 and 90 degrees approximately
 bins_OG = bins[1:] * 0.5 + bins[:-1] * 0.5 
 
@@ -32,6 +33,10 @@ prob_list = []
 bin_list = []
 err_list = []
 pot_list = []
+
+full_prob = []
+full_err  = []
+
 
 # get probability distributions and unbias them
 for i in namelist:
@@ -48,6 +53,10 @@ for i in namelist:
     norm = np.sum(total_prob) * 1.0
     total_prob = total_prob / norm
     err_prob = err_prob / norm
+
+    full_prob.append(total_prob)
+    full_err.append(err_prob)
+
     bin_centres = bin_centres[total_prob!=0]
     err_prob = err_prob[total_prob != 0]
     total_prob = total_prob[total_prob!=0]
@@ -70,6 +79,9 @@ for i in namelist:
 
 plt.show()
 
+full_prob = np.array(full_prob)
+full_err = np.array(full_err)
+
 if args.left_del:
     print en_list[0]
     new_bins = [] 
@@ -90,6 +102,7 @@ if args.left_del:
     print en_list[0]
 
 # shift distributions to get free energy
+full_shift = np.ones(N_sims - 1)
 for i in range(1, len(bin_list)):
     mask_minus =  np.array([ x1 in bin_list[i] for x1 in bin_list[i-1] ])
     mask_plus  =  np.array([ x1 in bin_list[i-1] for x1 in bin_list[i] ])
@@ -101,6 +114,7 @@ for i in range(1, len(bin_list)):
     err_minus = err_list[i-1][mask_minus]
 #     print en_plus.shape
 #     print en_minus.shape
+    full_shift[i-1] = np.mean(en_plus - en_minus)
 
     if args.w:
         weight = 1 / ( err_plus * err_plus + err_minus * err_minus )
@@ -117,12 +131,34 @@ for row in prob_list:
     log_prob.append(-np.log(row))
 zero_prob = min( [ min(arr) for arr in log_prob ] )
 
+# unbiased distribution from long trajectory
+long_data = np.genfromtxt('/home/pratima/Biased-SingleLigand/dump_files/theta-long.txt', delimiter=' ')
+long_hist, long_bins = np.histogram(long_data, bins = bins, density=True)
+long_bins = bins_OG[long_hist != 0]
+long_hist = long_hist[long_hist != 0]
+log_long = -np.log(long_hist)
+long_zero = min(log_long)
+log_long = log_long - long_zero
+
 plt.figure(1)
 for i in range(len(bin_list)):
     plt.plot(bin_list[i], -en_list[i] + zero)
 #     plt.plot(bin_list[i], -en_list[i])
 #     plt.plot(bin_list[i], np.exp(-beta * (en_list[i] - zero)), color='red')
+
+plt.plot(long_bins, 2+log_long, color='blue')
 plt.show()
 
-
-
+# calculate a better-stitched together picture knowing the weights
+Z = np.cumsum(full_shift)
+Z = np.exp(Z)
+Z = np.insert(Z, 0, 1.0)
+P_est = np.zeros(N_sims)
+print Z.shape
+print full_prob.shape
+# for i in range(Nbins):
+#     mask = (full_prob[:,i] != 0)
+#     print mask.shape
+#     P_est[i] = np.sum(full_prob[i,:][mask] * Z[mask] * full_err[i,:][mask]) / np.sum(full_err[i,:][mask])
+# 
+# print P_est
