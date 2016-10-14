@@ -66,7 +66,7 @@ norm = 0.0
 for i in range(nbins):
     denominator = 0.0
     for j in range(N_sims):
-        denominator = denominator + M_alpha[j] * np.exp(-(pot_list[j][i] - weights[j]) * beta)
+        denominator = denominator + M_alpha[j] * np.exp(-(pot_list[j][i] - beta * weights[j]))
     prob_dist[i] = N_theta[i] / denominator
     norm = norm + prob_dist[i]
 
@@ -82,11 +82,14 @@ log_prob = log_prob - zero
 # print prob_dist
 plt.figure()
 # plt.plot(bin_centres, prob_dist,color='red')
-plt.plot(prob_bins, log_prob,color='blue', label='after unbiasing')
-plt.plot(long_bins, log_long, color='red', label='long simulation')
-plt.xlabel(r'$\theta_z$', fontsize=20)
-plt.ylabel(r'$\log{P(\theta_z)}$', fontsize=20)
-plt.legend(loc='upper center')
+plt.plot(prob_bins, log_prob,color='blue', label='after WHAM unbiasing', linewidth=2)
+plt.plot(long_bins, log_long, color='red', label='long simulation', linewidth=2)
+plt.ylim(0,20)
+plt.xlabel(r'$\theta_z$', fontsize=24)
+plt.ylabel(r'$-\log{P(\theta_z)}$', fontsize=28)
+plt.legend(loc='upper center', fontsize=28)
+plt.xticks(fontsize=24, fontweight='bold')
+plt.yticks(fontsize=24, fontweight='bold')
 plt.show()
 
 

@@ -51,6 +51,17 @@ for i in namelist:
 
     bin_centres = 0.5 * bins[1:] + 0.5 * bins[:-1]
     err_prob = np.sqrt(total_prob)
+
+    # remove histogram bins with zero counts
+#     bin_centres = bin_centres[total_prob!=0]
+#     err_prob = err_prob[total_prob != 0]
+#     total_prob = total_prob[total_prob!=0]
+
+    # remove histogram bins with < 10 counts
+    bin_centres = bin_centres[total_prob > 10]
+    err_prob = err_prob[total_prob > 10]
+    total_prob = total_prob[total_prob > 10]
+
     norm = np.sum(total_prob) * 1.0
     total_prob = total_prob / norm
     err_prob = err_prob / norm
@@ -58,12 +69,8 @@ for i in namelist:
     full_prob.append(total_prob)
     full_err.append(err_prob)
 
-    bin_centres = bin_centres[total_prob!=0]
-    err_prob = err_prob[total_prob != 0]
-    total_prob = total_prob[total_prob!=0]
-
     free_en = np.log(total_prob)
-#     plt.plot(bin_centres, free_en)
+#     plt.plot(bin_centres, -free_en, linewidth=2)
     bias_en = 0.5 * strength * (bin_centres - i) * (bin_centres - i) * beta 
 #     plt.plot(bin_centres, -bias_en)
     free_en = free_en + bias_en
@@ -74,10 +81,15 @@ for i in namelist:
     pot_list.append(bias_en)
     err_list.append(err_en)
 
-    plt.plot(bin_centres, free_en, color=c)
+    plt.plot(bin_centres, free_en, color=c, linewidth=2)
 #     plt.plot(bin_centres, total_prob)
 #     plt.errorbar(bin_centres, free_en, err_en, color=c)
 
+plt.xlabel('theta', fontsize=30)
+plt.ylabel('-log P', fontsize=30)
+plt.xticks(fontsize=25)
+plt.yticks(fontsize=25)
+plt.xlim(0.0,1.6)
 plt.show()
 
 full_prob = np.array(full_prob)
@@ -116,7 +128,6 @@ for i in range(1, len(bin_list)):
     err_minus = err_list[i-1][mask_minus]
 #     print en_plus.shape
 #     print en_minus.shape
-    full_shift[i-1] = np.mean(en_plus - en_minus)
 
     if args.w:
         weight = 1 / ( err_plus * err_plus + err_minus * err_minus )
@@ -124,6 +135,7 @@ for i in range(1, len(bin_list)):
     else:
         shift = np.mean(en_plus - en_minus)
     en_list[i] = en_list[i] - shift
+    full_shift[i-1] = shift 
 
 # en_list = np.array(en_list)
 zero = max( [ max(arr) for arr in en_list ] )
@@ -144,18 +156,25 @@ log_long = log_long - long_zero
 
 plt.figure(1)
 for i in range(len(bin_list)):
-    plt.plot(bin_list[i], -en_list[i] + zero)
+    plt.plot(bin_list[i], -en_list[i] + zero, color='red', linewidth=2, label='after shifting')
 #     plt.plot(bin_list[i], -en_list[i])
 #     plt.plot(bin_list[i], np.exp(-beta * (en_list[i] - zero)), color='red')
 
-plt.plot(long_bins, 2+log_long, color='blue')
+plt.plot(long_bins, log_long, color='blue', linewidth=2, label='long simulation')
+plt.xlabel('theta', fontsize=30)
+plt.ylabel('-log P', fontsize=30)
+plt.xticks(fontsize=25)
+plt.yticks(fontsize=25)
+plt.xlim(0.0,1.6)
+
 plt.show()
 
 # calculate a better-stitched together picture knowing the weights
-Z = np.cumsum(full_shift)
-Z = np.exp(Z)
+# Z = np.cumsum(full_shift)
+Z = np.exp(-full_shift)
 Z = np.insert(Z, 0, 1.0)
 P_est = np.zeros(N_bins)
+full_weight[:,:] = 1
 print Z.shape
 print full_prob.shape
 for i in range(N_bins):
@@ -165,11 +184,16 @@ for i in range(N_bins):
     if (term == term):
         P_est[i] = term
 
-print P_est
+# print P_est
 est_bins = bins_OG[P_est != 0]
 P_est = P_est[P_est != 0]
 plt.figure(2)
-plt.plot(est_bins, -np.log(P_est))
+plt.plot(est_bins, 4.1-np.log(P_est), color='blue', label='after unbiasing by shifting', linewidth=2)
+plt.plot(long_bins, log_long, color='red', label='long simulation', linewidth=2)
+plt.ylim(0,20)
+plt.xlabel(r'$\theta_z$', fontsize=20)
+plt.ylabel(r'$-\log{P(\theta_z)}$', fontsize=20)
+plt.legend(loc='upper center', fontsize=24)
 plt.show()
 
 

@@ -49,7 +49,7 @@ for count, i in enumerate(namelist):
 #     plt.plot(bin_centres, bias_en)
 #     pot_list.append(bias_en)
 
-plt.show()
+# plt.show()
 
 tol = 1.0e-6
 en_diff = 1.0
@@ -64,7 +64,7 @@ pot_list = np.zeros((N_sims, len(bins_OG)))
 # print pot_list.shape
 for count, i in enumerate(namelist):
 #     pot_list[count] = np.exp(-beta * 0.5 * strength * (bins_OG - i) * (bins_OG - i))
-    pot_list[count] = 0.5 * strength * (bins_OG - i) * (bins_OG - i)
+    pot_list[count] = 0.5 * strength * (bins_OG - i) * (bins_OG - i) * beta
 # print pot_list[0]
 # exit(0)
 
@@ -81,12 +81,12 @@ while (en_diff > tol):
 #         if (np.sum(free_en) != np.sum(free_en)):
 #             print "SHIT"
 #             exit(0)
-    	denominator[t_i] = np.sum( M_alpha * np.exp(-beta * (pot_list[:,t_i] - old_en)) )
+    	denominator[t_i] = np.sum( M_alpha * np.exp(-(pot_list[:,t_i] - beta * old_en)) )
 
     # now update free energies
     for s_i in range(N_sims):
 #         en_list[s_i] =  np.sum(N_theta * (pot_list[s_i,:] / denominator))
-        en_list[s_i] =  -kBT * np.log( np.sum(N_theta * (np.exp(-beta * pot_list[s_i,:]) / denominator)) )
+        en_list[s_i] =  -kBT * np.log( np.sum(N_theta * (np.exp(-pot_list[s_i,:]) / denominator)) )
 
     difference = np.abs(en_list - old_en)
     en_diff = np.sum(difference)
