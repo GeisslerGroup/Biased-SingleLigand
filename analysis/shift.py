@@ -155,6 +155,8 @@ log_long = -np.log(long_hist)
 long_zero = min(log_long)
 log_long = log_long - long_zero
 
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
 plt.figure(1)
 for i in range(len(bin_list)):
     plt.plot(bin_list[i], -en_list[i] + zero, color='red', linewidth=2, label='after shifting')
@@ -162,12 +164,11 @@ for i in range(len(bin_list)):
 #     plt.plot(bin_list[i], np.exp(-beta * (en_list[i] - zero)), color='red')
 
 plt.plot(long_bins, log_long, color='blue', linewidth=2, label='long simulation')
-plt.xlabel('theta', fontsize=30)
-plt.ylabel('-log P', fontsize=30)
+plt.xlabel(r'$\theta$', fontsize=30)
+plt.ylabel(r'$-\log{P(\theta)}$', fontsize=30)
 plt.xticks(fontsize=25)
 plt.yticks(fontsize=25)
 plt.xlim(0.0,1.6)
-
 plt.show()
 
 # calculate a better-stitched together picture knowing the weights
@@ -189,7 +190,7 @@ for i in range(N_bins):
 est_bins = bins_OG[P_est != 0]
 P_est = P_est[P_est != 0]
 plt.figure(2)
-plt.plot(est_bins, np.log(P_est), color='blue', label='after unbiasing by shifting', linewidth=2)
+plt.plot(est_bins, 4-np.log(P_est), color='blue', label='after unbiasing by shifting', linewidth=2)
 plt.plot(long_bins, log_long, color='red', label='long simulation', linewidth=2)
 plt.ylim(0,20)
 plt.xlabel(r'$\theta_z$', fontsize=20)
