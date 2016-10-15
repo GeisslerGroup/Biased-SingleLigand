@@ -58,16 +58,17 @@ for i in namelist:
 #     total_prob = total_prob[total_prob!=0]
 
     # remove histogram bins with < 10 counts
+    
+    norm = np.sum(total_prob) * 1.0
+    full_prob.append(total_prob/norm)
+    full_err.append(err_prob/norm)
+
     bin_centres = bin_centres[total_prob > 10]
     err_prob = err_prob[total_prob > 10]
     total_prob = total_prob[total_prob > 10]
 
-    norm = np.sum(total_prob) * 1.0
     total_prob = total_prob / norm
     err_prob = err_prob / norm
-
-    full_prob.append(total_prob)
-    full_err.append(err_prob)
 
     free_en = np.log(total_prob)
 #     plt.plot(bin_centres, -free_en, linewidth=2)
@@ -188,7 +189,7 @@ for i in range(N_bins):
 est_bins = bins_OG[P_est != 0]
 P_est = P_est[P_est != 0]
 plt.figure(2)
-plt.plot(est_bins, 4.1-np.log(P_est), color='blue', label='after unbiasing by shifting', linewidth=2)
+plt.plot(est_bins, np.log(P_est), color='blue', label='after unbiasing by shifting', linewidth=2)
 plt.plot(long_bins, log_long, color='red', label='long simulation', linewidth=2)
 plt.ylim(0,20)
 plt.xlabel(r'$\theta_z$', fontsize=20)
