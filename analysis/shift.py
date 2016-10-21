@@ -86,10 +86,10 @@ for i in namelist:
 #     plt.plot(bin_centres, total_prob)
 #     plt.errorbar(bin_centres, free_en, err_en, color=c)
 
-plt.xlabel('theta', fontsize=30)
-plt.ylabel('-log P', fontsize=30)
-plt.xticks(fontsize=25)
-plt.yticks(fontsize=25)
+plt.xlabel('theta', fontsize=32)
+plt.ylabel('-log P', fontsize=32)
+plt.xticks(fontsize=28)
+plt.yticks(fontsize=28)
 plt.xlim(0.0,1.6)
 plt.show()
 
@@ -168,6 +168,7 @@ plt.xlabel(r'$\theta$', fontsize=30)
 plt.ylabel(r'$-\log{P(\theta)}$', fontsize=30)
 plt.xticks(fontsize=25)
 plt.yticks(fontsize=25)
+plt.ylim(0,20)
 plt.xlim(0.0,1.6)
 plt.show()
 
